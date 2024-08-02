@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Equation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 50px;
+        }
+        .equation {
+            font-size: 24px;
+            margin: 20px 0;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        .input-group label {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="input-group">
+        <label for="xValue">Enter a value for x:</label>
+        <input type="number" id="xValue" value="1">
+        <button onclick="updateEquation()">Update Equation</button>
+    </div>
+    <div class="equation" id="equationDisplay">
+        $$\frac{8x}{2} + 5 - 4x = 5$$
+    </div>
+
+    <script>
+        function updateEquation() {
+            var x = document.getElementById('xValue').value;
+            var numerator = 8 * x;
+            var equationDisplay = document.getElementById('equationDisplay');
+            equationDisplay.innerHTML = `$$\\frac{${numerator}}{2} + 5 - 4(${x}) = 5$$`;
+            MathJax.Hub.Queue(["Typeset", MathJax.Hub, equationDisplay]);
+        }
+    </script>
+    <script type="text/javascript" async
+      src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML">
+    </script>
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+      });
+    </script>
+</body>
+</html>

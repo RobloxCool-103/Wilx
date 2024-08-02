@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simple Chess</title>
+<style>
+    .chessboard {
+        display: grid;
+        grid-template-columns: repeat(8, 50px);
+        grid-template-rows: repeat(8, 50px);
+    }
+    .square {
+        width: 50px;
+        height: 50px;
+        text-align: center;
+        line-height: 50px;
+        font-size: 24px;
+        cursor: pointer;
+    }
+    .white {
+        background-color: #f0d9b5;
+    }
+    .black {
+        background-color: #b58863;
+    }
+    .selected {
+        background-color: #7da3a1 !important;
+    }
+    .valid-move {
+        background-color: #88bb88 !important;
+    }
+</style>
+</head>
+<body>
+<div class="chessboard" id="chessboard">
+    <!-- Board will be generated here -->
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        let board = document.getElementById("chessboard");
+        let selectedPiece = null;
+        let turn = 'white';
+
+        function createChessboard() {
+            let chessboardHTML = "";
+            for (let i = 0; i < 8; i++) {
+                for (let j = 0; j < 8; j++) {
+                    let squareClass = (i + j) % 2 === 0 ? "white" : "black";
+                    chessboardHTML += `<div class="square ${squareClass}" data-row="${i}" data-col="${j}"></div>`;
+                }
+            }
+            board.innerHTML = chessboardHTML;
+            placePieces();
+        }
+
+        function placePieces() {
+            let piecesOrder = ['♖', '♘', '♗', '♕', '♔', '♗', '♘', '♖'];
+            let pawns = '♙♙♙♙♙♙♙♙';
+            let rows = [piecesOrder, pawns, '', '', '', '', pawns.toLowerCase(), piecesOrder.slice().reverse()];
+            let squares = board.querySelectorAll('.square');
+            squares.forEach((square, index) => {
+                let row = Math.floor(index / 8);
+                let col = index % 8;
+                if (rows[row]) {
+                    let piece = rows[row][col];
+                    if (piece) square.textContent = piece;
+                }
+            });
+        }
+
+        createChessboard();
+
+        board.addEventListener("click", function(event) {
+            let square = event.target;
+            if (!square.classList.contains("square")) return;
+
+            if (square.textContent !== "" && square.textContent.toLowerCase().includes(turn)) {
+                if (selectedPiece === square) {
+                    deselectPiece();
+                    return;
+                }
+                if (selectedPiece) {
+                    movePiece(selectedPiece, square);
+                    return;
+                }
+                selectedPiece = square;
+                square.classList.add("selected");
+                highlightValidMoves(square);
+            } else {
+                if (selectedPiece) {
+                    movePiece(selectedPiece, square);
+                }
+            }
+        });
+
+        function movePiece(start, end) {
+            let startRow = parseInt(start.getAttribute("data-row"));
+            let startCol = parseInt(start.getAttribute("data-col"));
+            let endRow = parseInt(end.getAttribute("data-row"));
+            let endCol = parseInt(end.getAttribute("data-col"));
+
+            end.textContent = start.textContent;
+            start.textContent = "";
+            deselectPiece();
+
+            // Pawn promotion
+            if (end.textContent === '♙' && endRow === 0) {
+                end.textContent = '♕'; // Promote pawn to queen (basic implementation)
+            }
+
+            turn = turn === 'white' ? 'black' : 'white';
+        }
+
+        function highlightValidMoves(piece) {
+            let row = parseInt(piece.getAttribute("data-row"));
+            let col = parseInt(piece.getAttribute("data-col"));
+            let pieceType = piece.textContent;
+
+            // Logic to highlight valid moves (not implemented in this basic example)
+            // Just highlights the square ahead for pawn
+            if (pieceType === '♙' || pieceType === '♟') {
+                let direction = pieceType === '♙' ? -1 : 1;
+                let targetRow = row + direction;
+                let targetSquare = document.querySelector(`[data-row="${targetRow}"][data-col="${col}"]`);
+                if (targetSquare && targetSquare.textContent === "") {
+                    targetSquare.classList.add("valid-move");
+                }
+            }
+        }
+
+        function deselectPiece() {
+            if (selectedPiece) {
+                selectedPiece.classList.remove("selected");
+                selectedPiece = null;
+                removeValidMoveHighlights();
+            }
+        }
+
+        function removeValidMoveHighlights() {
+            let validMoves = document.querySelectorAll(".valid-move");
+            validMoves.forEach(move => {
+                move.classList.remove("valid-move");
+            });
+        }
+    });
+</script>
+</body>
+</html>

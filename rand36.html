@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Connect Four</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+  }
+
+  #game-container {
+    display: inline-block;
+    margin-top: 50px;
+    position: relative;
+  }
+
+  .cell {
+    width: 50px;
+    height: 50px;
+    border: 1px solid #000;
+    display: inline-block;
+    background-color: #fff;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .red, .yellow {
+    border-radius: 50%;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: top 0.5s;
+  }
+
+  .red {
+    background-color: #f00;
+  }
+
+  .yellow {
+    background-color: #ff0;
+  }
+</style>
+</head>
+<body>
+<div id="game-container"></div>
+
+<script>
+  const numRows = 6;
+  const numCols = 7;
+  let currentPlayer = 'red';
+  let board = Array.from({ length: numRows }, () => Array(numCols).fill(null));
+
+  const gameContainer = document.getElementById('game-container');
+
+  function renderBoard() {
+    gameContainer.innerHTML = '';
+    for (let row = 0; row < numRows; row++) {
+      for (let col = 0; col < numCols; col++) {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        cell.dataset.row = row;
+        cell.dataset.col = col;
+        cell.addEventListener('click', () => dropDisc(col));
+        if (board[row][col]) {
+          const disc = document.createElement('div');
+          disc.className = board[row][col];
+          disc.style.top = '-50px'; // Start position above the cell
+          cell.appendChild(disc);
+          // Trigger reflow to apply the transition
+          window.requestAnimationFrame(() => {
+            disc.style.top = '0px'; // End position inside the cell
+          });
+        }
+        gameContainer.appendChild(cell);
+      }
+      gameContainer.appendChild(document.createElement('br'));
+    }
+  }
+
+  function dropDisc(col) {
+    for (let row = numRows - 1; row >= 0; row--) {
+      if (!board[row][col]) {
+        board[row][col] = currentPlayer;
+        renderBoard();
+        if (checkWin(row, col)) {
+          setTimeout(() => {
+            alert(`${currentPlayer.toUpperCase()} wins!`);
+            resetGame();
+          }, 500); // Delay to allow animation to complete
+        } else {
+          switchPlayer();
+        }
+        return;
+      }
+    }
+  }
+
+  function switchPlayer() {
+    currentPlayer = currentPlayer === 'red' ? 'yellow' : 'red';
+  }
+
+  function checkWin(row, col) {
+    const directions = [
+      [0, 1], [1, 0], [1, 1], [1, -1] // horizontal, vertical, diagonal (top-left to bottom-right), diagonal (top-right to bottom-left)
+    ];
+
+    for (const [dx, dy] of directions) {
+      let count = 1;
+      for (const sign of [-1, 1]) {
+        let r = row + sign * dx;
+        let c = col + sign * dy;
+        while (r >= 0 && r < numRows && c >= 0 && c < numCols && board[r][c] === currentPlayer) {
+          count++;
+          r += sign * dx;
+          c += sign * dy;
+        }
+      }
+      if (count >= 4) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function resetGame() {
+    currentPlayer = 'red';
+    board = Array.from({ length: numRows }, () => Array(numCols).fill(null));
+    renderBoard();
+  }
+
+  renderBoard();
+</script>
+</body>
+</html>

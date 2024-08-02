@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Drag and Drop Website Builder</title>
+    <style>
+        body {
+            display: flex;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .sidebar {
+            width: 200px;
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            overflow-y: auto;
+            height: 100vh;
+        }
+
+        .element {
+            background-color: #444;
+            margin: 10px 0;
+            padding: 10px;
+            text-align: center;
+            cursor: grab;
+        }
+
+        .workspace {
+            flex: 1;
+            border: 2px dashed #ccc;
+            margin: 10px;
+            padding: 10px;
+            min-height: 500px;
+            position: relative;
+        }
+
+        button {
+            margin: 10px;
+        }
+
+        pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            margin: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .dropped-element {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="element" draggable="true" ondragstart="drag(event)" id="text">Text</div>
+        <div class="element" draggable="true" ondragstart="drag(event)" id="picture">Picture</div>
+        <div class="element" draggable="true" ondragstart="drag(event)" id="shape">Shape</div>
+        <div class="element" draggable="true" ondragstart="drag(event)" id="video">Video</div>
+        <div class="element" draggable="true" ondragstart="drag(event)" id="slideshow">Slideshow</div>
+        <div class="element" draggable="true" ondragstart="drag(event)" id="button">Button</div>
+        <div class="element" draggable="true" ondragstart="drag(event)" id="hotspot">Hotspot</div>
+        <div class="element" draggable="true" ondragstart="drag(event)" id="form">Form</div>
+        <div class="element" draggable="true" ondragstart="drag(event)" id="e-commerce">E-commerce</div>
+        <div class="element" draggable="true" ondragstart="drag(event)" id="maps">Maps</div>
+        <div class="element" draggable="true" ondragstart="drag(event)" id="music">Music</div>
+        <div class="element" draggable="true" ondragstart="drag(event)" id="code">Code</div>
+        <div class="element" draggable="true" ondragstart="drag(event)" id="custom-html">Custom HTML</div>
+    </div>
+    <div class="workspace" ondrop="drop(event)" ondragover="allowDrop(event)">
+    </div>
+    <button onclick="generateCode()">Show Combined Code</button>
+    <pre id="combinedCode"></pre>
+
+    <script>
+        function allowDrop(event) {
+            event.preventDefault();
+        }
+
+        function drag(event) {
+            event.dataTransfer.setData("text", event.target.id);
+        }
+
+        function drop(event) {
+            event.preventDefault();
+            var data = event.dataTransfer.getData("text");
+            var element = document.createElement("div");
+            element.classList.add("dropped-element");
+            switch(data) {
+                case 'text':
+                    element.innerHTML = '<p contenteditable="true">Editable Text</p>';
+                    break;
+                case 'picture':
+                    element.innerHTML = '<img src="https://via.placeholder.com/150" alt="Placeholder Image">';
+                    break;
+                case 'shape':
+                    element.innerHTML = '<div style="width: 100px; height: 100px; background-color: #888;"></div>';
+                    break;
+                case 'video':
+                    element.innerHTML = '<video controls><source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">Your browser does not support the video tag.</video>';
+                    break;
+                case 'slideshow':
+                    element.innerHTML = '<div>Slideshow Placeholder</div>';
+                    break;
+                case 'button':
+                    element.innerHTML = '<button>Click Me</button>';
+                    break;
+                case 'hotspot':
+                    element.innerHTML = '<div style="width: 50px; height: 50px; background-color: red;" title="Hotspot"></div>';
+                    break;
+                case 'form':
+                    element.innerHTML = '<form><input type="text" placeholder="Name"><br><input type="email" placeholder="Email"><br><button type="submit">Submit</button></form>';
+                    break;
+                case 'e-commerce':
+                    element.innerHTML = '<div>E-commerce Placeholder</div>';
+                    break;
+                case 'maps':
+                    element.innerHTML = '<iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d12638.799366021242!2d-122.084249!3d37.421999!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2z37wrMjUnMTkuMiJOIDEyMsKwMDUnMDMuMSJX!5e0!3m2!1sen!2sus!4v1620249755835!5m2!1sen!2sus" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>';
+                    break;
+                case 'music':
+                    element.innerHTML = '<audio controls><source src="https://www.w3schools.com/html/horse.mp3" type="audio/mp3">Your browser does not support the audio element.</audio>';
+                    break;
+                case 'code':
+                    element.innerHTML = '<pre><code>Code Placeholder</code></pre>';
+                    break;
+                case 'custom-html':
+                    element.innerHTML = prompt("Enter custom HTML:");
+                    break;
+                // Add more cases for additional elements if needed
+            }
+            document.querySelector('.workspace').appendChild(element);
+        }
+
+        function generateCode() {
+            const workspace = document.querySelector('.workspace');
+            const combinedCode = workspace.innerHTML;
+            document.getElementById('combinedCode').innerText = combinedCode;
+        }
+    </script>
+</body>
+</html>

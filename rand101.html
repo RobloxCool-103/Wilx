@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Ultimate Password Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .section {
+            margin-bottom: 40px;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input[type="text"], input[type="password"], input[type="date"], textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:disabled {
+            background-color: #ddd;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>The Ultimate Password Game</h1>
+
+    <!-- Step 1: Character Criteria -->
+    <div class="section" id="step1">
+        <h2>Step 1: Character Criteria</h2>
+        <p>Your password must meet the following criteria:</p>
+        <ul>
+            <li>Minimum Length: 16 characters</li>
+            <li>Include at least 2 uppercase letters (A-Z)</li>
+            <li>Include at least 2 lowercase letters (a-z)</li>
+            <li>Include at least 2 numbers (0-9)</li>
+            <li>Include at least 2 special characters (!@#$%^&*)</li>
+        </ul>
+        <label for="initialPassword">Enter your initial password:</label>
+        <input type="password" id="initialPassword">
+        <button onclick="validateStep1()">Confirm</button>
+    </div>
+
+    <!-- Step 2: Personal Questions Verification -->
+    <div class="section" id="step2" style="display:none;">
+        <h2>Step 2: Personal Questions Verification</h2>
+        <p>Answer the following questions. Your answers must be incorporated into your final password.</p>
+        <label for="color">What is your favorite color?</label>
+        <input type="text" id="color">
+        <label for="pet">What is the name of your first pet?</label>
+        <input type="text" id="pet">
+        <label for="maidenName">What is your mother's maiden name?</label>
+        <input type="text" id="maidenName">
+        <label for="birthCity">In which city were you born?</label>
+        <input type="text" id="birthCity">
+        <label for="school">What was the name of your elementary school?</label>
+        <input type="text" id="school">
+        <button onclick="validateStep2()">Confirm</button>
+    </div>
+
+    <!-- Step 3: Pattern Check -->
+    <div class="section" id="step3" style="display:none;">
+        <h2>Step 3: Pattern Check</h2>
+        <p>Your password must follow this pattern:</p>
+        <p><strong>Start with a lowercase letter, followed by a number, then an uppercase letter, followed by a special character, and repeat the sequence until the end.</strong></p>
+        <label for="finalPassword">Enter your final password:</label>
+        <input type="password" id="finalPassword">
+        <button onclick="validateStep3()">Confirm</button>
+    </div>
+
+    <!-- Step 4: Captcha Verification -->
+    <div class="section" id="step4" style="display:none;">
+        <h2>Step 4: Captcha Verification</h2>
+        <p>Please complete the following CAPTCHA challenges to verify you are not a robot.</p>
+        <label for="captcha1">What is 12 + 5?</label>
+        <input type="text" id="captcha1">
+        <label for="captcha2">What is the fifth letter of the alphabet?</label>
+        <input type="text" id="captcha2">
+        <label for="captcha3">What color is the sky on a clear day?</label>
+        <input type="text" id="captcha3">
+        <button onclick="validateStep4()">Confirm</button>
+    </div>
+
+    <!-- Step 5: Personal Information Verification -->
+    <div class="section" id="step5" style="display:none;">
+        <h2>Step 5: Personal Information Verification</h2>
+        <p>Enter your personal information to further verify your identity.</p>
+        <label for="fullName">Full Name:</label>
+        <input type="text" id="fullName">
+        <label for="dob">Date of Birth (MM/DD/YYYY):</label>
+        <input type="date" id="dob">
+        <label for="address">Current Address:</label>
+        <input type="text" id="address">
+        <label for="phone">Phone Number:</label>
+        <input type="text" id="phone">
+        <button onclick="validateStep5()">Confirm</button>
+    </div>
+
+    <!-- Step 6: Terms and Conditions -->
+    <div class="section" id="step6" style="display:none;">
+        <h2>Step 6: Terms and Conditions</h2>
+        <p>Please read and accept the terms and conditions to proceed.</p>
+        <textarea rows="10" cols="50" readonly>
+            Terms and Conditions:
+            1. You agree to participate in this lengthy and annoying process.
+            2. You acknowledge that this process is unnecessarily complex.
+            3. You will not hold us liable for any frustration or annoyance caused.
+        </textarea>
+        <label>
+            <input type="checkbox" id="terms"> I accept the terms and conditions.
+        </label>
+        <button onclick="validateStep6()">Confirm</button>
+    </div>
+
+    <!-- Step 7: Additional Security Questions -->
+    <div class="section" id="step7" style="display:none;">
+        <h2>Step 7: Additional Security Questions</h2>
+        <p>Answer the following additional security questions.</p>
+        <label for="firstCar">What was the make of your first car?</label>
+        <input type="text" id="firstCar">
+        <label for="highSchool">What was the name of your high school?</label>
+        <input type="text" id="highSchool">
+        <label for="firstJob">What was your first job?</label>
+        <input type="text" id="firstJob">
+        <button onclick="validateStep7()">Confirm</button>
+    </div>
+
+    <!-- Step 8: Favorite Things -->
+    <div class="section" id="step8" style="display:none;">
+        <h2>Step 8: Favorite Things</h2>
+        <p>List your favorite things in the following categories:</p>
+        <label for="favoriteFood">Favorite Food:</label>
+        <input type="text" id="favoriteFood">
+        <label for="favoriteMovie">Favorite Movie:</label>
+        <input type="text" id="favoriteMovie">
+        <label for="favoriteSong">Favorite Song:</label>
+        <input type="text" id="favoriteSong">
+        <button onclick="validateStep8()">Confirm</button>
+    </div>
+
+    <!-- Step 9: Random Trivia -->
+    <div class="section" id="step9" style="display:none;">
+        <h2>Step 9: Random Trivia</h2>
+        <p>Answer these random trivia questions.</p>
+        <label for="trivia1">What is the capital of France?</label>
+        <input type="text" id="trivia1">
+        <label for="trivia2">What is the square root of 144?</label>
+        <input type="text" id="trivia2">
+        <label for="trivia3">Who wrote "To Kill a Mockingbird"?</label>
+        <input type="text" id="trivia3">
+        <button onclick="validateStep9()">Confirm</button>
+    </div>
+
+    <!-- Step 10: Email Verification -->
+    <div class="section" id="step10" style="display:none;">
+        <h2>Step 10: Email Verification</h2>
+        <p>Enter your email address to receive a verification code.</p>
+        <label for="email">Email Address:</label>
+        <input type="text" id="email">
+        <button onclick="sendVerificationCode()">Send Verification Code</button>
+        <label for="verificationCode" style="display:none;" id="verificationCodeLabel">Enter Verification Code:</label>
+        <input type="text" id="verificationCode" style="display:none;">
+        <button onclick="validateStep10()" style="display:none;" id="verifyButton">Verify</button>
+    </div>
+
+    <!-- Step 11: Phone Verification -->
+    <div class="section" id="step11" style="display:none;">
+        <h2>Step 11: Phone Verification</h2>
+        <p>Enter your phone number to receive a verification code via SMS.</p>
+        <label for="phoneVerify">Phone Number:</label>
+        <input type="text" id="phoneVerify">
+        <button onclick="sendPhoneVerificationCode()">Send Verification Code</button>
+        <label for="phoneVerificationCode" style="display:none;" id="phoneVerificationCodeLabel">Enter Verification Code:</label>
+        <input type="text" id="phoneVerificationCode" style="display:none;">
+        <button onclick="validateStep11()" style="display:none;" id="phoneVerifyButton">Verify</button>
+    </div>
+
+    <!-- Step 12: Final Confirmation -->
+    <div class="section" id="step12" style="display:none;">
+        <h2>Step 12: Final Confirmation</h2>
+        <p>Review your information and confirm to complete the process.</p>
+        <p id="reviewInfo"></p>
+        <button onclick="completeProcess()">Complete</button>
+    </div>
+
+    <!-- Completion Message -->
+    <div class="section" id="completion" style="display:none;">
+        <h2>Congratulations!</h2>
+        <p>You have successfully completed the Ultimate Password Game!</p>
+    </div>
+
+    <script>
+        function validateStep1() {
+            const password = document.getElementById('initialPassword').value;
+            const criteria = [
+                password.length >= 16,
+                (password.match(/[A-Z]/g) || []).length >= 2,
+                (password.match(/[a-z]/g) || []).length >= 2,
+                (password.match(/[0-9]/g) || []).length >= 2,
+                (password.match(/[!@#$%^&*]/g) || []).length >= 2
+            ];
+
+            if (criteria.every(Boolean)) {
+                document.getElementById('step1').style.display = 'none';
+                document.getElementById('step2').style.display = 'block';
+            } else {
+                alert('Password does not meet all criteria. Please try again.');
+            }
+        }
+
+        function validateStep2() {
+            const color = document.getElementById('color').value.trim();
+            const pet = document.getElementById('pet').value.trim();
+            const maidenName = document.getElementById('maidenName').value.trim();
+            const birthCity = document.getElementById('birthCity').value.trim();
+            const school = document.getElementById('school').value.trim();
+
+            if (color && pet && maidenName && birthCity && school) {
+                document.getElementById('step2').style.display = 'none';
+                document.getElementById('step3').style.display = 'block';
+            } else {
+                alert('Please answer all questions.');
+            }
+        }
+
+        function validateStep3() {
+            const password = document.getElementById('finalPassword').value;
+            const pattern = /^[a-z][0-9][A-Z][!@#$%^&*](?:[a-z][0-9][A-Z][!@#$%^&*])*$/;
+
+            if (pattern.test(password)) {
+                document.getElementById('step3').style.display = 'none';
+                document.getElementById('step4').style.display = 'block';
+            } else {
+                alert('Password does not follow the required pattern. Please try again.');
+            }
+        }
+
+        function validateStep4() {
+            const captcha1 = document.getElementById('captcha1').value.trim();
+            const captcha2 = document.getElementById('captcha2').value.trim();
+            const captcha3 = document.getElementById('captcha3').value.trim();
+
+            if (captcha1 === '17' && captcha2.toLowerCase() === 'e' && captcha3.toLowerCase() === 'blue') {
+                document.getElementById('step4').style.display = 'none';
+                document.getElementById('step5').style.display = 'block';
+            } else {
+                alert('CAPTCHA answers are incorrect. Please try again.');
+            }
+        }
+
+        function validateStep5() {
+            const fullName = document.getElementById('fullName').value.trim();
+            const dob = document.getElementById('dob').value.trim();
+            const address = document.getElementById('address').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+
+            if (fullName && dob && address && phone) {
+                document.getElementById('step5').style.display = 'none';
+                document.getElementById('step6').style.display = 'block';
+            } else {
+                alert('Please fill in all personal information.');
+            }
+        }
+
+        function validateStep6() {
+            const terms = document.getElementById('terms').checked;
+
+            if (terms) {
+                document.getElementById('step6').style.display = 'none';
+                document.getElementById('step7').style.display = 'block';
+            } else {
+                alert('You must accept the terms and conditions to proceed.');
+            }
+        }
+
+        function validateStep7() {
+            const firstCar = document.getElementById('firstCar').value.trim();
+            const highSchool = document.getElementById('highSchool').value.trim();
+            const firstJob = document.getElementById('firstJob').value.trim();
+
+            if (firstCar && highSchool && firstJob) {
+                document.getElementById('step7').style.display = 'none';
+                document.getElementById('step8').style.display = 'block';
+            } else {
+                alert('Please answer all additional security questions.');
+            }
+        }
+
+        function validateStep8() {
+            const favoriteFood = document.getElementById('favoriteFood').value.trim();
+            const favoriteMovie = document.getElementById('favoriteMovie').value.trim();
+            const favoriteSong = document.getElementById('favoriteSong').value.trim();
+
+            if (favoriteFood && favoriteMovie && favoriteSong) {
+                document.getElementById('step8').style.display = 'none';
+                document.getElementById('step9').style.display = 'block';
+            } else {
+                alert('Please list all your favorite things.');
+            }
+        }
+
+        function validateStep9() {
+            const trivia1 = document.getElementById('trivia1').value.trim();
+            const trivia2 = document.getElementById('trivia2').value.trim();
+            const trivia3 = document.getElementById('trivia3').value.trim();
+
+            if (trivia1.toLowerCase() === 'paris' && trivia2 === '12' && trivia3.toLowerCase() === 'harper lee') {
+                document.getElementById('step9').style.display = 'none';
+                document.getElementById('step10').style.display = 'block';
+            } else {
+                alert('Trivia answers are incorrect. Please try again.');
+            }
+        }
+
+        function sendVerificationCode() {
+            alert('Verification code sent to your email.');
+            document.getElementById('verificationCodeLabel').style.display = 'block';
+            document.getElementById('verificationCode').style.display = 'block';
+            document.getElementById('verifyButton').style.display = 'block';
+        }
+
+        function validateStep10() {
+            const verificationCode = document.getElementById('verificationCode').value.trim();
+            if (verificationCode === '123456') {
+                document.getElementById('step10').style.display = 'none';
+                document.getElementById('step11').style.display = 'block';
+            } else {
+                alert('Verification code is incorrect. Please try again.');
+            }
+        }
+
+        function sendPhoneVerificationCode() {
+            alert('Verification code sent to your phone.');
+            document.getElementById('phoneVerificationCodeLabel').style.display = 'block';
+            document.getElementById('phoneVerificationCode').style.display = 'block';
+            document.getElementById('phoneVerifyButton').style.display = 'block';
+        }
+
+        function validateStep11() {
+            const phoneVerificationCode = document.getElementById('phoneVerificationCode').value.trim();
+            if (phoneVerificationCode === '654321') {
+                document.getElementById('step11').style.display = 'none';
+                document.getElementById('step12').style.display = 'block';
+                reviewInformation();
+            } else {
+                alert('Phone verification code is incorrect. Please try again.');
+            }
+        }
+
+        function reviewInformation() {
+            const fullName = document.getElementById('fullName').value.trim();
+            const dob = document.getElementById('dob').value.trim();
+            const address = document.getElementById('address').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const email = document.getElementById('email').value.trim();
+            
+            const reviewText = `
+                Full Name: ${fullName}
+                Date of Birth: ${dob}
+                Address: ${address}
+                Phone: ${phone}
+                Email: ${email}
+            `;
+            document.getElementById('reviewInfo').innerText = reviewText;
+        }
+
+        function completeProcess() {
+            alert('Process completed successfully!');
+            document.getElementById('step12').style.display = 'none';
+            document.getElementById('completion').style.display = 'block';
+        }
+    </script>
+</body>
+</html>

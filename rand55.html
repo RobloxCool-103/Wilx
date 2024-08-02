@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DrawScript</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+        #controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        #code {
+            width: 300px;
+            height: 200px;
+            margin-bottom: 10px;
+            font-family: monospace;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #fff;
+        }
+        #buttons {
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: #fff;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #canvas {
+            border: 1px solid #ccc;
+            background-color: #fff;
+        }
+        #color-picker {
+            display: none;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="controls">
+        <textarea id="code" oninput="checkForColor()", placeholder="CIRCLE x=50 y=50 r=40
+        RECT x=100 y=100 xw=50 yw=50
+        LINE x1=150 y1=150 x2=200 y2=200
+        TRIANGLE x1=200 y1=200 x2=250 y2=250 x3=200 y3=300
+        ELLIPSE x=300 y=300 xw=50 yw=30
+        TEXT x=50 y=50 text=Hello size=20">CIRCLE x=50 y=50 r=40
+RECT x=100 y=100 xw=50 yw=50
+LINE x1=150 y1=150 x2=200 y2=200
+TRIANGLE x1=200 y1=200 x2=250 y2=250 x3=200 y3=300
+ELLIPSE x=300 y=300 xw=50 yw=30
+TEXT x=50 y=50 text=Hello size=20</textarea>
+        <div id="buttons">
+            <button onclick="runDrawScript()">Run</button>
+            <button onclick="downloadCanvas()">Download</button>
+        </div>
+        <input type="color" id="color-picker" onchange="updateColor()">
+    </div>
+    <canvas id="canvas" width="500" height="500"></canvas>
+
+    <script>
+        let currentColor = 'black';
+        const colorPicker = document.getElementById('color-picker');
+
+        function checkForColor() {
+            const code = document.getElementById('code').value;
+            if (code.toLowerCase().includes('color')) {
+                colorPicker.style.display = 'block';
+            } else {
+                colorPicker.style.display = 'none';
+            }
+        }
+
+        function updateColor() {
+            currentColor = colorPicker.value;
+        }
+
+        function runDrawScript() {
+            const code = document.getElementById('code').value;
+            const commands = code.split(/[,;\n]+/); // Split by commas, semicolons, or newlines
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);  // Clear canvas
+
+            // Translate the context to make (0, 0) the center of the canvas
+            ctx.save();
+            ctx.translate(canvas.width / 2, canvas.height / 2);
+
+            let tempColor = currentColor;
+
+            commands.forEach(command => {
+                const parts = command.trim().split(/\s+/); // Split by whitespace
+                const cmd = parts[0].toUpperCase();
+                const args = {};
+
+                parts.slice(1).forEach(part => {
+                    const [key, value] = part.split('=');
+                    args[key.toLowerCase()] = isNaN(value) ? value : Number(value);
+                });
+
+                switch (cmd) {
+                    case 'CIRCLE':
+                        ctx.beginPath();
+                        ctx.arc(args.x, args.y, args.r, 0, Math.PI * 2);
+                        ctx.fillStyle = tempColor;
+                        ctx.fill();
+                        break;
+
+                    case 'RECT':
+                        ctx.fillStyle = tempColor;
+                        ctx.fillRect(args.x, args.y, args.xw, args.yw);
+                        break;
+
+                    case 'LINE':
+                        ctx.beginPath();
+                        ctx.moveTo(args.x1, args.y1);
+                        ctx.lineTo(args.x2, args.y2);
+                        ctx.strokeStyle = tempColor;
+                        ctx.stroke();
+                        break;
+
+                    case 'TRIANGLE':
+                        ctx.beginPath();
+                        ctx.moveTo(args.x1, args.y1);
+                        ctx.lineTo(args.x2, args.y2);
+                        ctx.lineTo(args.x3, args.y3);
+                        ctx.closePath();
+                        ctx.fillStyle = tempColor;
+                        ctx.fill();
+                        break;
+
+                    case 'ELLIPSE':
+                        ctx.beginPath();
+                        ctx.ellipse(args.x, args.y, args.xw, args.yw, 0, 0, Math.PI * 2);
+                        ctx.fillStyle = tempColor;
+                        ctx.fill();
+                        break;
+
+                    case 'TEXT':
+                        ctx.fillStyle = tempColor;
+                        ctx.font = `${args.size}px Arial`;
+                        ctx.fillText(args.text, args.x, args.y);
+                        break;
+
+                    case 'COLOR':
+                        tempColor = `rgb(${args.r}, ${args.g}, ${args.b})`;
+                        break;
+
+                    default:
+                        console.error('Unknown command:', cmd);
+                }
+            });
+
+            ctx.restore();
+        }
+
+        function downloadCanvas() {
+            const canvas = document.getElementById('canvas');
+            const link = document.createElement('a');
+            link.download = 'drawing.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+    </script>
+</body>
+</html>

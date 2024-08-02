@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agar.io Clone</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        canvas {
+            border: 1px solid #ccc;
+            background-color: #fff;
+        }
+        #score {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 20px;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="score">Score: 0</div>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreElement = document.getElementById('score');
+
+        const player = {
+            x: canvas.width / 2,
+            y: canvas.height / 2,
+            radius: 20,
+            color: 'blue',
+            speed: 2
+        };
+
+        const bots = [];
+        const botCount = 5;
+
+        const foods = [];
+        const foodCount = 100;
+        const maxFoodCount = 200;
+
+        const gameArea = {
+            width: 2000,
+            height: 2000
+        };
+
+        let score = 0;
+
+        function createFood() {
+            return {
+                x: Math.random() * gameArea.width,
+                y: Math.random() * gameArea.height,
+                radius: 5,
+                color: 'green'
+            };
+        }
+
+        function createBot() {
+            return {
+                x: Math.random() * gameArea.width,
+                y: Math.random() * gameArea.height,
+                radius: 20,
+                color: 'red',
+                speed: 1 + Math.random() * 1.5,
+                direction: Math.random() * Math.PI * 2
+            };
+        }
+
+        for (let i = 0; i < foodCount; i++) {
+            foods.push(createFood());
+        }
+
+        for (let i = 0; i < botCount; i++) {
+            bots.push(createBot());
+        }
+
+        function drawCircle(x, y, radius, color) {
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function updatePlayer() {
+            const angle = Math.atan2(mouse.y - canvas.height / 2, mouse.x - canvas.width / 2);
+            player.x += Math.cos(angle) * player.speed;
+            player.y += Math.sin(angle) * player.speed;
+
+            player.x = Math.max(player.radius, Math.min(gameArea.width - player.radius, player.x));
+            player.y = Math.max(player.radius, Math.min(gameArea.height - player.radius, player.y));
+        }
+
+        function updateBots() {
+            bots.forEach(bot => {
+                bot.x += Math.cos(bot.direction) * bot.speed;
+                bot.y += Math.sin(bot.direction) * bot.speed;
+
+                if (bot.x < bot.radius || bot.x > gameArea.width - bot.radius || bot.y < bot.radius || bot.y > gameArea.height - bot.radius) {
+                    bot.direction = Math.random() * Math.PI * 2;
+                }
+
+                foods.forEach((food, index) => {
+                    const dist = Math.hypot(bot.x - food.x, bot.y - food.y);
+                    if (dist < bot.radius + food.radius) {
+                        bot.radius += 0.5;
+                        foods.splice(index, 1);
+                        if (foods.length < maxFoodCount) {
+                            foods.push(createFood());
+                        }
+                    }
+                });
+            });
+        }
+
+        function checkCollisions() {
+            for (let i = foods.length - 1; i >= 0; i--) {
+                const food = foods[i];
+                const dist = Math.hypot(player.x - food.x, player.y - food.y);
+
+                if (dist < player.radius + food.radius) {
+                    player.radius += 1;
+                    foods.splice(i, 1);
+                    score = Math.floor(player.radius - 20); // Update score
+                    scoreElement.textContent = `Score: ${score}`;
+                    if (foods.length < maxFoodCount) {
+                        foods.push(createFood());
+                    }
+                }
+            }
+
+            bots.forEach(bot => {
+                const dist = Math.hypot(player.x - bot.x, player.y - bot.y);
+                if (dist < player.radius + bot.radius) {
+                    if (player.radius > bot.radius) {
+                        player.radius += bot.radius / 2;
+                        score = Math.floor(player.radius - 20); // Update score
+                        scoreElement.textContent = `Score: ${score}`;
+                        bot.radius = 20; // Reset bot size
+                        bot.x = Math.random() * gameArea.width; // Reposition bot
+                        bot.y = Math.random() * gameArea.height;
+                    } else {
+                        alert('Game Over!');
+                        document.location.reload();
+                    }
+                }
+            });
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const offsetX = player.x - canvas.width / 2;
+            const offsetY = player.y - canvas.height / 2;
+
+            ctx.save();
+            ctx.translate(-offsetX, -offsetY);
+
+            drawCircle(player.x, player.y, player.radius, player.color);
+
+            foods.forEach(food => {
+                drawCircle(food.x, food.y, food.radius, food.color);
+            });
+
+            bots.forEach(bot => {
+                drawCircle(bot.x, bot.y, bot.radius, bot.color);
+            });
+
+            ctx.restore();
+        }
+
+        function gameLoop() {
+            updatePlayer();
+            updateBots();
+            checkCollisions();
+            draw();
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        const mouse = {
+            x: canvas.width / 2,
+            y: canvas.height / 2
+        };
+
+        window.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            mouse.x = e.clientX - rect.left;
+            mouse.y = e.clientY - rect.top;
+        });
+
+        gameLoop();
+    </script>
+</body>
+</html>

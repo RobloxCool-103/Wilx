@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Endless Maze</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #000;
+        }
+        #maze {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #000;
+            overflow: hidden;
+        }
+        .wall {
+            position: absolute;
+            background-color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div id="maze"></div>
+    <script>
+        function createWall() {
+            const wall = document.createElement('div');
+            const width = Math.random() * 100 + 30; // Random width between 30px and 130px
+            const height = Math.random() * 100 + 30; // Random height between 30px and 130px
+            const left = Math.random() * (window.innerWidth - width);
+            const top = Math.random() * (window.innerHeight - height);
+
+            wall.className = 'wall';
+            wall.style.width = `${width}px`;
+            wall.style.height = `${height}px`;
+            wall.style.left = `${left}px`;
+            wall.style.top = `${top}px`;
+            wall.style.transform = `rotate(${Math.random() * 360}deg)`;
+            wall.style.opacity = Math.random() * 0.5 + 0.5; // Random opacity between 0.5 and 1
+
+            document.getElementById('maze').appendChild(wall);
+        }
+
+        function createMaze() {
+            const numWalls = 50; // Number of walls to create
+            for (let i = 0; i < numWalls; i++) {
+                createWall();
+            }
+
+            // Continuously create new walls
+            setTimeout(createMaze, 5000); // Create new maze every 5 seconds
+        }
+
+        createMaze(); // Initialize maze creation
+    </script>
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doodle Jump</title>
+    <style>
+        body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #87CEEB; /* Light blue background */
+}
+
+canvas {
+    border: 2px solid #000;
+}
+
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="480" height="640"></canvas>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+const player = {
+    x: canvas.width / 2 - 25,
+    y: canvas.height - 200, // Adjusted starting height
+    width: 50,
+    height: 50,
+    dx: 0,
+    dy: 0,
+    speed: 5, // Speed of movement
+    gravity: 0.5,
+    jumpPower: -10,
+    bounce: -8, // Slight bounce effect
+    isOnPlatform: false
+};
+
+const platforms = [];
+const platformWidth = 100;
+const platformHeight = 10;
+const numPlatforms = 10;
+const platformSpeed = 2;
+const minPlatformY = 50; // Minimum Y position for platforms
+const maxPlatformY = 300; // Maximum Y position for platforms
+
+function createPlatforms() {
+    platforms.length = 0;
+    for (let i = 0; i < numPlatforms; i++) {
+        let x = Math.random() * (canvas.width - platformWidth);
+        // Ensure platforms are within view and reachable from the starting height
+        let y = Math.random() * (canvas.height - minPlatformY - platformHeight) + minPlatformY;
+        platforms.push({ x, y, width: platformWidth, height: platformHeight });
+    }
+}
+
+function drawPlayer() {
+    ctx.fillStyle = '#FF4500'; // Orange color
+    ctx.fillRect(player.x, player.y, player.width, player.height);
+}
+
+function drawPlatforms() {
+    ctx.fillStyle = '#228B22'; // Forest green color
+    platforms.forEach(platform => {
+        ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
+    });
+}
+
+function updatePlayer() {
+    player.x += player.dx;
+    player.y += player.dy;
+
+    // Gravity
+    player.dy += player.gravity;
+
+    // Boundary conditions
+    if (player.x < 0) player.x = 0;
+    if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
+    if (player.y + player.height > canvas.height) {
+        player.y = canvas.height - player.height;
+        player.dy = 0;
+    }
+
+    if (player.y < 0) player.y = 0;
+}
+
+function updatePlatforms() {
+    platforms.forEach(platform => {
+        platform.y += platformSpeed;
+        if (platform.y > canvas.height) {
+            platform.y = -platformHeight;
+            platform.x = Math.random() * (canvas.width - platformWidth);
+        }
+    });
+}
+
+function detectCollision() {
+    player.isOnPlatform = false;
+    platforms.forEach(platform => {
+        if (player.y + player.height <= platform.y + platform.height &&
+            player.y + player.height + player.dy >= platform.y &&
+            player.x + player.width > platform.x &&
+            player.x < platform.x + platform.width) {
+            
+            // Bounce effect
+            player.dy = player.bounce;
+            player.y = platform.y - player.height;
+            player.isOnPlatform = true;
+        }
+    });
+}
+
+function gameLoop() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawPlayer();
+    drawPlatforms();
+    updatePlayer();
+    updatePlatforms();
+    detectCollision();
+
+    requestAnimationFrame(gameLoop);
+}
+
+document.addEventListener('keydown', (e) => {
+    if (e.code === 'Space' && player.isOnPlatform) {
+        player.dy = player.jumpPower;
+        player.isOnPlatform = false; // Prevents multiple jumps while in the air
+    }
+    if (e.code === 'ArrowLeft') {
+        player.dx = -player.speed;
+    }
+    if (e.code === 'ArrowRight') {
+        player.dx = player.speed;
+    }
+});
+
+document.addEventListener('keyup', (e) => {
+    if (e.code === 'ArrowLeft' || e.code === 'ArrowRight') {
+        player.dx = 0;
+    }
+});
+
+createPlatforms();
+gameLoop();
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Difference Checker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        input, button {
+            margin: 10px 0;
+        }
+        #result {
+            margin-top: 20px;
+            white-space: pre-wrap;
+        }
+        .added {
+            color: green;
+        }
+        .removed {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>File Difference Checker</h1>
+    <div>
+        <input type="file" id="file1">
+    </div>
+    <div>
+        <input type="file" id="file2">
+    </div>
+    <div>
+        <button onclick="compareFiles()">Compare</button>
+    </div>
+    <div id="result"></div>
+
+    <script>
+        async function compareFiles() {
+            const file1 = document.getElementById('file1').files[0];
+            const file2 = document.getElementById('file2').files[0];
+
+            if (!file1 || !file2) {
+                alert("Please select two files to compare.");
+                return;
+            }
+
+            const text1 = await file1.text();
+            const text2 = await file2.text();
+
+            const result = getDifferences(text1, text2);
+            document.getElementById('result').innerHTML = result;
+        }
+
+        function getDifferences(text1, text2) {
+            const lines1 = text1.split('\n');
+            const lines2 = text2.split('\n');
+            let result = '';
+
+            let i = 0;
+            let j = 0;
+
+            while (i < lines1.length || j < lines2.length) {
+                if (i < lines1.length && j < lines2.length && lines1[i] === lines2[j]) {
+                    result += lines1[i] + '\n';
+                    i++;
+                    j++;
+                } else {
+                    if (i < lines1.length) {
+                        result += '<span class="removed">- ' + lines1[i] + '</span>\n';
+                        i++;
+                    }
+                    if (j < lines2.length) {
+                        result += '<span class="added">+ ' + lines2[j] + '</span>\n';
+                        j++;
+                    }
+                }
+            }
+
+            return result;
+        }
+    </script>
+</body>
+</html>

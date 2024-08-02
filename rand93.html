@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reaction Time Tester</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        #target {
+            width: 200px;
+            height: 200px;
+            background-color: lightgray;
+            margin: 0 auto;
+            cursor: pointer;
+        }
+        #result {
+            font-size: 24px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Click to Test Your Reaction Time</h1>
+        <div id="target" onclick="handleClick()"></div>
+        <p id="result"></p>
+    </div>
+
+    <script>
+        let startTime, endTime;
+
+        function getRandomDelay(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function startGame() {
+            let delay = getRandomDelay(1000, 3000); // Random delay between 1 to 3 seconds
+            setTimeout(function() {
+                document.getElementById('target').style.backgroundColor = 'red';
+                startTime = new Date().getTime();
+            }, delay);
+        }
+
+        function handleClick() {
+            if (!startTime) {
+                alert('Wait for the color to change!');
+                return;
+            }
+            endTime = new Date().getTime();
+            let reactionTime = (endTime - startTime) / 1000; // Convert milliseconds to seconds
+            document.getElementById('result').textContent = `Your reaction time: ${reactionTime.toFixed(2)} seconds`;
+            document.getElementById('target').style.backgroundColor = 'lightgray';
+            startTime = null;
+            setTimeout(startGame, 1000); // Delay before starting the next round
+        }
+
+        // Start the first round after page loads
+        window.onload = startGame;
+    </script>
+</body>
+</html>

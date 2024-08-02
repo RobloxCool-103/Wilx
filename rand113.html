@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shape Shifter</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #f0f0f0;
+        }
+        .shape {
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <script>
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function createShape() {
+            const shape = document.createElement('div');
+            const size = getRandomInt(30, 100);
+            const shapeType = Math.random() > 0.5 ? 'circle' : 'square';
+            const left = getRandomInt(0, window.innerWidth - size);
+            const top = getRandomInt(0, window.innerHeight - size);
+
+            shape.className = 'shape';
+            shape.style.width = `${size}px`;
+            shape.style.height = `${size}px`;
+            shape.style.borderRadius = shapeType === 'circle' ? '50%' : '0';
+            shape.style.left = `${left}px`;
+            shape.style.top = `${top}px`;
+            shape.style.backgroundColor = `hsl(${getRandomInt(0, 360)}, 70%, 70%)`;
+            shape.style.opacity = '0.8';
+
+            document.body.appendChild(shape);
+
+            setTimeout(() => {
+                document.body.removeChild(shape);
+            }, getRandomInt(500, 2000)); // Shape disappears randomly between 0.5s and 2s
+        }
+
+        setInterval(createShape, 500); // Create a new shape every 500ms
+    </script>
+</body>
+</html>

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customizable Digital Business Card</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        #editor {
+            border: 1px solid #ccc;
+            width: 400px;
+            height: 250px;
+            position: relative;
+            margin: 20px auto;
+            overflow: hidden;
+            background-color: white;
+            background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"%3E%3Ccircle cx="50" cy="50" r="40" stroke="%23ccc" stroke-width="2" fill="%20none%20"/%3E%3C/svg%3E');
+        }
+        .draggable {
+            position: absolute;
+            cursor: move;
+            border: 1px dashed #000;
+            padding: 5px;
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+        .form-group {
+            margin: 10px 0;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group button {
+            width: calc(100% - 10px);
+            padding: 5px;
+            margin: 0 5px;
+            box-sizing: border-box;
+        }
+        #generateVCard {
+            padding: 10px 20px;
+            background-color: #1a73e8;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #generateVCard:hover {
+            background-color: #1557b3;
+        }
+        #fileInput {
+            display: none;
+        }
+        #dropZone {
+            border: 2px dashed #ccc;
+            padding: 20px;
+            margin-top: 10px;
+        }
+        #dropZone.dragover {
+            background-color: #e9e9e9;
+        }
+    </style>
+</head>
+<body>
+    <h1>Customizable Digital Business Card</h1>
+    
+    <div id="editor" class="dropzone">
+        <!-- User-added elements will appear here -->
+    </div>
+
+    <div class="form-group">
+        <label for="textInput">Add Text:</label>
+        <input type="text" id="textInput" placeholder="Enter text">
+        <button id="addTextButton">Add Text</button>
+    </div>
+
+    <div class="form-group">
+        <label for="fileInput">Add Image File:</label>
+        <input type="file" id="fileInput" accept="image/*">
+        <button id="uploadImageButton">Upload Image</button>
+    </div>
+
+    <button id="generateVCard">Download vCard</button>
+
+    <div id="dropZone">
+        <p>Drag and drop an image here or use the button below to upload an image.</p>
+    </div>
+
+    <script>
+        // Utility to make elements draggable
+        function makeDraggable(element) {
+            element.addEventListener('mousedown', function(e) {
+                let offsetX = e.clientX - parseInt(window.getComputedStyle(element).left);
+                let offsetY = e.clientY - parseInt(window.getComputedStyle(element).top);
+
+                function mouseMoveHandler(e) {
+                    element.style.top = (e.clientY - offsetY) + 'px';
+                    element.style.left = (e.clientX - offsetX) + 'px';
+                }
+
+                function mouseUpHandler() {
+                    document.removeEventListener('mousemove', mouseMoveHandler);
+                    document.removeEventListener('mouseup', mouseUpHandler);
+                }
+
+                document.addEventListener('mousemove', mouseMoveHandler);
+                document.addEventListener('mouseup', mouseUpHandler);
+            });
+        }
+
+        // Add text to the editor
+        document.getElementById('addTextButton').addEventListener('click', function() {
+            const text = document.getElementById('textInput').value;
+            if (text) {
+                const newElement = document.createElement('div');
+                newElement.className = 'draggable';
+                newElement.textContent = text;
+                document.getElementById('editor').appendChild(newElement);
+                makeDraggable(newElement);
+            }
+        });
+
+        // Add image from file input
+        document.getElementById('uploadImageButton').addEventListener('click', function() {
+            document.getElementById('fileInput').click();
+        });
+
+        // Handle file input change
+        document.getElementById('fileInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const newElement = document.createElement('img');
+                    newElement.className = 'draggable';
+                    newElement.src = e.target.result;
+                    newElement.style.width = '100px'; // Default width, can be adjusted
+                    document.getElementById('editor').appendChild(newElement);
+                    makeDraggable(newElement);
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Handle drag and drop
+        const dropZone = document.getElementById('dropZone');
+        dropZone.addEventListener('dragover', function(event) {
+            event.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', function() {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', function(event) {
+            event.preventDefault();
+            dropZone.classList.remove('dragover');
+
+            const files = event.dataTransfer.files;
+            if (files.length > 0) {
+                const file = files[0];
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const newElement = document.createElement('img');
+                        newElement.className = 'draggable';
+                        newElement.src = e.target.result;
+                        newElement.style.width = '100px'; // Default width, can be adjusted
+                        document.getElementById('editor').appendChild(newElement);
+                        makeDraggable(newElement);
+                    }
+                    reader.readAsDataURL(file);
+                }
+            }
+        });
+
+        // Generate vCard
+        document.getElementById('generateVCard').addEventListener('click', function() {
+            const elements = document.querySelectorAll('#editor .draggable');
+            let vCardData = `BEGIN:VCARD
+VERSION:3.0\n`;
+
+            elements.forEach(element => {
+                if (element.tagName === 'DIV') {
+                    vCardData += `NOTE:${element.textContent}\n`;
+                } else if (element.tagName === 'IMG') {
+                    vCardData += `PHOTO;VALUE=URL:${element.src}\n`;
+                }
+            });
+
+            vCardData += 'END:VCARD';
+            
+            const blob = new Blob([vCardData], { type: 'text/vcard' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'business-card.vcf';
+            a.click();
+        });
+    </script>
+</body>
+</html>

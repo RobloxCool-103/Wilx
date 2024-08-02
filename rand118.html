@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Whack-a-Mole Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        #wiggly-text {
+            font-size: 24px;
+            margin: 20px;
+        }
+        #game {
+            margin: 20px;
+        }
+        .mole {
+            width: 50px;
+            height: 50px;
+            background-color: brown;
+            border-radius: 50%;
+            position: absolute;
+            display: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <h1 id="wiggly-text">Wiggly Text</h1>
+
+    <div id="game">
+        <h2>Whack-a-Mole Game</h2>
+        <div id="mole-container" style="position: relative; width: 300px; height: 300px; background-color: lightgreen; margin: auto;">
+            <div class="mole" id="mole"></div>
+        </div>
+        <p id="score">Score: 0</p>
+    </div>
+
+    <script>
+        // Wiggly Text
+        const wigglyText = document.getElementById('wiggly-text');
+        function wiggle() {
+            wigglyText.style.transform = `translate(${Math.random() * 10 - 5}px, ${Math.random() * 10 - 5}px)`;
+            requestAnimationFrame(wiggle);
+        }
+        wiggle();
+
+        // Whack-a-Mole Game
+        const mole = document.getElementById('mole');
+        const scoreDisplay = document.getElementById('score');
+        let score = 0;
+
+        mole.addEventListener('click', () => {
+            score++;
+            scoreDisplay.textContent = `Score: ${score}`;
+            hideMole();
+            showMole();
+        });
+
+        function showMole() {
+            const x = Math.random() * 250;
+            const y = Math.random() * 250;
+            mole.style.left = `${x}px`;
+            mole.style.top = `${y}px`;
+            mole.style.display = 'block';
+            setTimeout(hideMole, 1000);
+        }
+
+        function hideMole() {
+            mole.style.display = 'none';
+            setTimeout(showMole, Math.random() * 2000);
+        }
+
+        showMole();
+    </script>
+</body>
+</html>

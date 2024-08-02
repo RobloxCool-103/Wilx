@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dot Art Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        textarea {
+            width: 300px;
+            height: 150px;
+            margin-bottom: 10px;
+            font-size: 16px;
+            padding: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        #dotArtContainer {
+            margin-top: 20px;
+            white-space: pre-wrap; /* Preserves whitespace formatting */
+            font-size: 16px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Dot Art Generator</h1>
+        <textarea id="inputText" placeholder="Enter text for dot art..."></textarea>
+        <button id="generateBtn">Generate</button>
+        <div id="dotArtContainer"></div>
+    </div>
+
+    <script>
+        document.getElementById('generateBtn').addEventListener('click', () => {
+            const inputText = document.getElementById('inputText').value;
+            const dotArtContainer = document.getElementById('dotArtContainer');
+
+            // Basic example: replace each character with an emoji
+            const dotArt = inputText.split('').map(char => {
+                if (char === ' ') return ' ';
+                return '•'; // You can use any emoji or character here
+            }).join('');
+
+            dotArtContainer.textContent = dotArt;
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lion Drawing</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f0f0f0;
+      margin: 0;
+    }
+    .lion {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      background-color: orange;
+      border-radius: 50%;
+    }
+    .mane {
+      width: 240px;
+      height: 240px;
+      background-color: darkorange;
+      position: absolute;
+      top: -20px;
+      left: -20px;
+      border-radius: 50%;
+      z-index: -1;
+    }
+    .ear {
+      width: 50px;
+      height: 50px;
+      background-color: orange;
+      position: absolute;
+      top: -10px;
+      border-radius: 50%;
+    }
+    .ear.left {
+      left: 20px;
+    }
+    .ear.right {
+      right: 20px;
+    }
+    .eye {
+      width: 20px;
+      height: 20px;
+      background-color: white;
+      border-radius: 50%;
+      position: absolute;
+      top: 70px;
+    }
+    .eye.left {
+      left: 50px;
+    }
+    .eye.right {
+      right: 50px;
+    }
+    .nose {
+      width: 30px;
+      height: 30px;
+      background-color: black;
+      border-radius: 50%;
+      position: absolute;
+      top: 110px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .mouth {
+      width: 60px;
+      height: 40px;
+      background-color: pink;
+      border-radius: 0 0 60px 60px;
+      position: absolute;
+      top: 140px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+  </style>
+</head>
+<body>
+  <div class="lion">
+    <div class="mane"></div>
+    <div class="ear left"></div>
+    <div class="ear right"></div>
+    <div class="eye left"></div>
+    <div class="eye right"></div>
+    <div class="nose"></div>
+    <div class="mouth"></div>
+  </div>
+</body>
+</html>

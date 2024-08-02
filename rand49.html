@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dancing Cat</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #fff;
+        }
+        #catCanvas {
+            border: 1px solid #000;
+        }
+        #downloadBtn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #downloadBtn:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="catCanvas" width="400" height="400"></canvas>
+    <button id="downloadBtn">Download Image</button>
+    <script>
+        const canvas = document.getElementById('catCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Function to draw an ellipse
+        function drawEllipse(ctx, x, y, width, height, color, outline) {
+            ctx.beginPath();
+            ctx.ellipse(x, y, width / 2, height / 2, 0, 0, Math.PI * 2);
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.strokeStyle = outline;
+            ctx.stroke();
+        }
+
+        // Function to draw a polygon
+        function drawPolygon(ctx, points, color, outline) {
+            ctx.beginPath();
+            ctx.moveTo(points[0][0], points[0][1]);
+            for (let i = 1; i < points.length; i++) {
+                ctx.lineTo(points[i][0], points[i][1]);
+            }
+            ctx.closePath();
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.strokeStyle = outline;
+            ctx.stroke();
+        }
+
+        // Function to draw a line
+        function drawLine(ctx, x1, y1, x2, y2, color, width) {
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = width;
+            ctx.stroke();
+        }
+
+        // Drawing the cat
+
+        // Body
+        drawEllipse(ctx, 200, 250, 100, 100, 'grey', 'black');
+
+        // Head
+        drawEllipse(ctx, 200, 175, 60, 50, 'grey', 'black');
+
+        // Eyes
+        drawEllipse(ctx, 185, 165, 10, 10, 'white', 'black');
+        drawEllipse(ctx, 215, 165, 10, 10, 'white', 'black');
+
+        // Pupils
+        drawEllipse(ctx, 187, 167, 3, 3, 'black', 'black');
+        drawEllipse(ctx, 217, 167, 3, 3, 'black', 'black');
+
+        // Ears
+        drawPolygon(ctx, [[170, 150], [160, 130], [180, 140]], 'grey', 'black');
+        drawPolygon(ctx, [[230, 150], [240, 130], [220, 140]], 'grey', 'black');
+
+        // Nose
+        drawPolygon(ctx, [[200, 180], [195, 190], [205, 190]], 'pink', 'black');
+
+        // Mouth
+        ctx.beginPath();
+        ctx.arc(200, 195, 5, 0, Math.PI, false);
+        ctx.strokeStyle = 'black';
+        ctx.stroke();
+
+        // Legs
+        drawLine(ctx, 160, 300, 160, 350, 'grey', 10);  // Left leg
+        drawLine(ctx, 240, 300, 240, 350, 'grey', 10);  // Right leg
+
+        // Arms
+        drawLine(ctx, 150, 220, 110, 250, 'grey', 10);  // Left arm
+        drawLine(ctx, 250, 220, 290, 250, 'grey', 10);  // Right arm
+
+        // Tail
+        drawLine(ctx, 250, 280, 300, 260, 'grey', 10);  // Tail
+
+        // Function to download the image
+        function downloadImage() {
+            const image = canvas.toDataURL('image/png').replace('image/png', 'image/octet-stream');
+            const link = document.createElement('a');
+            link.href = image;
+            link.download = 'dancing_cat.png';
+            link.click();
+        }
+
+        // Attach click event to download button
+        document.getElementById('downloadBtn').addEventListener('click', downloadImage);
+        
+    </script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Pattern Generator</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+        #canvas {
+            border: 1px solid #000;
+            background-color: #fff;
+        }
+        #generateButton {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas" width="800" height="600"></canvas>
+    <button id="generateButton">Generate Random Pattern</button>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const width = canvas.width;
+        const height = canvas.height;
+
+        function getRandomColor() {
+            return `hsl(${Math.random() * 360}, 70%, 70%)`;
+        }
+
+        function drawRandomPattern() {
+            ctx.clearRect(0, 0, width, height);
+
+            const numShapes = Math.floor(Math.random() * 20) + 5; // Random number of shapes between 5 and 25
+
+            for (let i = 0; i < numShapes; i++) {
+                const shapeType = Math.random();
+                const size = Math.random() * 100 + 20; // Random size between 20px and 120px
+                const x = Math.random() * (width - size);
+                const y = Math.random() * (height - size);
+                const color = getRandomColor();
+
+                ctx.fillStyle = color;
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 2;
+
+                if (shapeType < 0.33) {
+                    // Draw rectangle
+                    ctx.fillRect(x, y, size, size);
+                } else if (shapeType < 0.66) {
+                    // Draw circle
+                    ctx.beginPath();
+                    ctx.arc(x + size / 2, y + size / 2, size / 2, 0, Math.PI * 2);
+                    ctx.fill();
+                } else {
+                    // Draw triangle
+                    ctx.beginPath();
+                    ctx.moveTo(x, y + size);
+                    ctx.lineTo(x + size / 2, y);
+                    ctx.lineTo(x + size, y + size);
+                    ctx.closePath();
+                    ctx.fill();
+                }
+            }
+        }
+
+        document.getElementById('generateButton').addEventListener('click', drawRandomPattern);
+
+        // Generate an initial pattern
+        drawRandomPattern();
+    </script>
+</body>
+</html>

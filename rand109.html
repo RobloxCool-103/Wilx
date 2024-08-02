@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Art Maker</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        #canvas {
+            border: 1px solid black;
+            margin-bottom: 10px;
+        }
+        .color-picker {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        .color-box {
+            width: 30px;
+            height: 30px;
+            border: 1px solid black;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Pixel Art Maker</h1>
+    <div class="color-picker">
+        <div class="color-box" style="background-color: black;" onclick="setColor('black')"></div>
+        <div class="color-box" style="background-color: red;" onclick="setColor('red')"></div>
+        <div class="color-box" style="background-color: green;" onclick="setColor('green')"></div>
+        <div class="color-box" style="background-color: blue;" onclick="setColor('blue')"></div>
+        <div class="color-box" style="background-color: yellow;" onclick="setColor('yellow')"></div>
+    </div>
+    <canvas id="canvas" width="300" height="300"></canvas>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const pixelSize = 10;
+        const colors = ['black', 'red', 'green', 'blue', 'yellow'];
+        let currentColor = 'black';
+
+        function setColor(color) {
+            currentColor = color;
+        }
+
+        function drawPixel(x, y) {
+            ctx.fillStyle = currentColor;
+            ctx.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
+        }
+
+        function handleClick(e) {
+            const rect = canvas.getBoundingClientRect();
+            const x = Math.floor((e.clientX - rect.left) / pixelSize);
+            const y = Math.floor((e.clientY - rect.top) / pixelSize);
+            drawPixel(x, y);
+        }
+
+        canvas.addEventListener('click', handleClick);
+
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    </script>
+</body>
+</html>

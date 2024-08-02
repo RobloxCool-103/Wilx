@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image to Base64 Converter</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #f0f0f0;
+      font-family: Arial, sans-serif;
+    }
+    input[type="file"] {
+      margin-bottom: 20px;
+    }
+    textarea, input[type="text"] {
+      width: 80%;
+      margin: 10px;
+    }
+    button, select {
+      margin: 10px;
+    }
+    img {
+      max-width: 80%;
+      height: auto;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Image to Base64 Converter</h1>
+  <input type="file" id="fileInput" accept="image/*">
+  <button onclick="convertToBase64()">Convert</button>
+  <textarea id="base64Output" readonly placeholder="Base64 output will appear here..."></textarea>
+  <button onclick="copyToClipboard()">Copy Base64</button>
+  <select id="formatSelect">
+    <option value="png">PNG</option>
+    <option value="jpeg">JPEG</option>
+  </select>
+  <input type="text" id="baseName" placeholder="Enter base name...">
+  <button onclick="downloadImage()">Download Image</button>
+
+  <!-- New input and button for converting base64 to image -->
+  <input type="text" id="base64Input" placeholder="Enter Base64 string...">
+  <button onclick="displayImage()">Display Image</button>
+  <img id="imageOutput" src="" alt="Image will appear here...">
+
+  <script>
+    let base64String = '';
+
+    function convertToBase64() {
+      const fileInput = document.getElementById('fileInput');
+      const file = fileInput.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          base64String = e.target.result;
+          document.getElementById('base64Output').value = base64String;
+        };
+        reader.readAsDataURL(file);
+      } else {
+        alert('Please select an image file first.');
+      }
+    }
+
+    function copyToClipboard() {
+      const base64Output = document.getElementById('base64Output');
+      base64Output.select();
+      document.execCommand('copy');
+      alert('Base64 string copied to clipboard.');
+    }
+
+    function downloadImage() {
+      const format = document.getElementById('formatSelect').value;
+      const baseName = document.getElementById('baseName').value.trim();
+      if (!baseName) {
+        alert('Please enter a base name.');
+        return;
+      }
+      const link = document.createElement('a');
+      link.href = base64String;
+      link.download = `${baseName}.${format}`;
+      link.click();
+    }
+
+    // Function to display image from base64 string
+    function displayImage() {
+      const base64Input = document.getElementById('base64Input').value.trim();
+      if (!base64Input) {
+        alert('Please enter a Base64 string.');
+        return;
+      }
+      const imageOutput = document.getElementById('imageOutput');
+      imageOutput.src = base64Input;
+    }
+  </script>
+</body>
+</html>

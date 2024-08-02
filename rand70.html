@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Long Doge Challenge</title>
+    <style>
+        body {
+            margin: 0;
+            overflow-x: hidden;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .doge {
+            font-size: 20px;
+            white-space: pre;
+            margin: 20px 0;
+            text-align: center;
+            color: #333;
+        }
+        .message {
+            font-size: 1.5em;
+            margin: 20px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="container">
+        <div class="message">Scroll down to see more Doge!</div>
+    </div>
+    <script>
+        const container = document.getElementById('container');
+
+        const dogeTextArt = `
+         ▄              ▄
+        ▌▒█           ▄▀▒▌
+        ▌▒▒█        ▄▀▒▒▒▐
+       ▐▄█▒▒▀▀▀▀▄▄▄▀▒▒▒▒▒▐
+     ▄▄▀▒░▒▒▒▒▒▒▒▒▒█▒▒▄█▒▐
+   ▄▀▒▒▒░░░▒▒▒░░░▒▒▒▀██▀▒▌
+  ▐▒▀▄░▒▒░░░▒▒▒░░░▒▒▒▒▀▄▒▒▌
+  ▌▀▄▀▄░▒▒░░░▒▒▒░░░▒▒▒▒▒▀▄▐
+ ▐▒▄█▄█▌▄░▀░▄▌░▀░░░░░░░░░▒▌
+ ▌▀▀▐▀▌▀▀▌▄▌▀▌░▀░░░░░░░░░▒▐
+▐░▀▄▐▄▌░░▀░▄▌░▀░░░░░░░░░░▒▌
+▐▄▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀▄▐`;
+        
+        function addDoge() {
+            const dogeDiv = document.createElement('div');
+            dogeDiv.className = 'doge';
+            dogeDiv.textContent = dogeTextArt;
+            container.appendChild(dogeDiv);
+        }
+
+        function addMultipleDoges(count) {
+            for (let i = 0; i < count; i++) {
+                addDoge();
+            }
+        }
+
+        // Initial load of doges
+        addMultipleDoges(10);
+
+        // Add more doges as the user scrolls
+        window.addEventListener('scroll', () => {
+            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500) {
+                addMultipleDoges(10);
+            }
+        });
+    </script>
+</body>
+</html>

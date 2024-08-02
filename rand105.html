@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Attractor Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+        #container {
+            padding: 20px;
+        }
+        canvas {
+            border: 1px solid #ccc;
+            margin-top: 10px;
+        }
+        button, select {
+            margin: 5px;
+            padding: 5px 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>Random Attractor Generator</h1>
+        <button onclick="generateAttractor()">Next Attractor</button>
+        <select id="quality" onchange="setQuality(this.value)">
+            <option value="low">Low</option>
+            <option value="medium" selected>Medium</option>
+            <option value="high">High</option>
+        </select>
+        <br>
+        <input type="checkbox" id="grayscale" onchange="toggleGrayscale(this.checked)"> Grayscale
+        <br>
+        <canvas id="attractorCanvas" width="800" height="600"></canvas>
+    </div>
+    <script>
+        const canvas = document.getElementById('attractorCanvas');
+        const ctx = canvas.getContext('2d');
+        let quality = 'medium';
+        let grayscale = false;
+
+        function generateAttractor() {
+            const params = Array.from({length: 15}, () => (Math.random() * 4 - 2).toFixed(2));
+            drawAttractor(params);
+        }
+
+        function setQuality(value) {
+            quality = value;
+        }
+
+        function toggleGrayscale(value) {
+            grayscale = value;
+            generateAttractor();
+        }
+
+        function drawAttractor(params) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const points = [];
+            let x = 0.1, y = 0.1, z = 0.1;
+
+            const iterations = quality === 'low' ? 10000 : quality === 'medium' ? 50000 : 100000;
+
+            for (let i = 0; i < iterations; i++) {
+                let newX = Math.sin(params[0] * y) - z * Math.cos(params[1] * x);
+                let newY = z * Math.sin(params[2] * x) - Math.cos(params[3] * y);
+                let newZ = Math.cos(params[4] * x) + Math.sin(params[5] * y);
+
+                x = newX;
+                y = newY;
+                z = newZ;
+
+                points.push({x: newX, y: newY});
+            }
+
+            ctx.beginPath();
+            for (let i = 0; i < points.length; i++) {
+                const point = points[i];
+                const px = canvas.width / 2 + point.x * 100;
+                const py = canvas.height / 2 + point.y * 100;
+
+                ctx.fillStyle = grayscale ? 'black' : 'brown';
+                ctx.fillRect(px, py, 1, 1);
+            }
+            ctx.closePath();
+        }
+
+        // Generate the initial attractor
+        generateAttractor();
+    </script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+Here in a few lines I am going to explain the use of my code:
+Beforehand, I would like to say that this is just a small, passion project and the code is not written by me just edited litle.
+Disclaimer : Do not use my code for any kind of real websites, because this is just basic demo code for anyone who wants to take insperation from existing code
+furthermore, this code is not professinally written, although I try my best to make it by deleting the bad and failed projects
+although one coder who has coded it all can argue that if I give my best, no project would fail, which is true but I did mention above
+that this is a passion project made to inspire and help learning coders, if you plan to use this code please make sure to improve it on the github page, now I will not find it now
+but just search up 'Wilx' and you might be able to find it although, I might be a litle more descriptive to reach more people.
+copyright: so that you know I allow you to use my content in anykind of senario if u gove creadit.

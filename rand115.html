@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Lava Lamp</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #000;
+        }
+        #lavaLamp {
+            position: absolute;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .blob {
+            position: absolute;
+            background-color: rgba(255, 0, 0, 0.6);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="lavaLamp"></div>
+    <script>
+        const lavaLamp = document.getElementById('lavaLamp');
+
+        function createBlob() {
+            const blob = document.createElement('div');
+            const size = Math.random() * 100 + 50; // Random size between 50px and 150px
+            const left = Math.random() * (window.innerWidth - size);
+            const top = Math.random() * (window.innerHeight - size);
+            const color = `hsl(${Math.random() * 360}, 70%, 70%)`;
+
+            blob.className = 'blob';
+            blob.style.width = `${size}px`;
+            blob.style.height = `${size}px`;
+            blob.style.left = `${left}px`;
+            blob.style.top = `${top}px`;
+            blob.style.backgroundColor = color;
+
+            lavaLamp.appendChild(blob);
+
+            // Animate the blob
+            let dx = (Math.random() - 0.5) * 2;
+            let dy = (Math.random() - 0.5) * 2;
+            function animate() {
+                const rect = blob.getBoundingClientRect();
+                if (rect.left + dx < 0 || rect.right + dx > window.innerWidth) dx = -dx;
+                if (rect.top + dy < 0 || rect.bottom + dy > window.innerHeight) dy = -dy;
+                blob.style.left = `${rect.left + dx}px`;
+                blob.style.top = `${rect.top + dy}px`;
+                requestAnimationFrame(animate);
+            }
+            animate();
+
+            setTimeout(() => {
+                lavaLamp.removeChild(blob);
+            }, 10000); // Remove blob after 10 seconds
+        }
+
+        function startLavaLamp() {
+            setInterval(createBlob, 500); // Create a new blob every 500ms
+        }
+
+        startLavaLamp(); // Start lava lamp effect
+    </script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Details</title>
+</head>
+<body>
+    <input type="file" id="imageUpload" accept="image/*">
+    <button onclick="showImageDetails()">Show Details</button>
+    <div id="output"></div>
+
+    <script>
+        function showImageDetails() {
+            const imageUpload = document.getElementById('imageUpload');
+            const outputDiv = document.getElementById('output');
+
+            const file = imageUpload.files[0];
+            if (!file) {
+                outputDiv.innerText = 'No file selected';
+                return;
+            }
+
+            const details = `
+                Name: ${file.name}\n
+                Type: ${file.type}\n
+                Size: ${file.size} bytes\n
+                Dimensions: ${file.width} x ${file.height}\n
+                Last Modified: ${file.lastModifiedDate}\n
+            `;
+            
+            outputDiv.innerText = details;
+        }
+    </script>
+</body>
+</html>

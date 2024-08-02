@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avoid the Obstacles</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: #f0f0f0;
+        }
+        canvas {
+            display: block;
+            background: #444;
+            margin: auto;
+            position: absolute;
+            top: 0; bottom: 0; left: 0; right: 0;
+        }
+        .menu {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: #333;
+        }
+        .menu button {
+            font-size: 20px;
+            padding: 10px 20px;
+            margin: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div id="menu" class="menu">
+    <h1>Select Difficulty</h1>
+    <button onclick="setDifficulty('easy')">Easy</button>
+    <button onclick="setDifficulty('medium')">Medium</button>
+    <button onclick="setDifficulty('hard')">Hard</button>
+    <button onclick="setDifficulty('impossible')">Impossible</button>
+</div>
+<canvas id="gameCanvas"></canvas>
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const menu = document.getElementById('menu');
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const player = { x: canvas.width / 2, y: canvas.height / 2, width: 30, height: 30, color: 'blue', speed: 5 };
+    const obstacles = [];
+    const obstacleSize = 30;
+    let score = 0;
+    let gameOver = false;
+
+    let difficulty = 'easy';
+    let obstacleSpeed;
+    let obstacleInterval;
+
+    function setDifficulty(level) {
+        difficulty = level;
+        switch (difficulty) {
+            case 'easy':
+                obstacleSpeed = 5;
+                obstacleInterval = 100;
+                break;
+            case 'medium':
+                obstacleSpeed = 7;
+                obstacleInterval = 80;
+                break;
+            case 'hard':
+                obstacleSpeed = 10;
+                obstacleInterval = 60;
+                break;
+            case 'impossible':
+                obstacleSpeed = 12;
+                obstacleInterval = 40;
+                break;
+        }
+        menu.style.display = 'none'; // Hide the menu
+        startGame(); // Start the game
+    }
+
+    function startGame() {
+        setInterval(createObstacle, obstacleInterval);
+        update();
+    }
+
+    function createObstacle() {
+        const side = Math.floor(Math.random() * 4);
+        let x, y, dx, dy;
+
+        switch (side) {
+            case 0: // Top
+                x = Math.random() * (canvas.width - obstacleSize);
+                y = -obstacleSize;
+                dx = 0;
+                dy = obstacleSpeed;
+                break;
+            case 1: // Bottom
+                x = Math.random() * (canvas.width - obstacleSize);
+                y = canvas.height;
+                dx = 0;
+                dy = -obstacleSpeed;
+                break;
+            case 2: // Left
+                x = -obstacleSize;
+                y = Math.random() * (canvas.height - obstacleSize);
+                dx = obstacleSpeed;
+                dy = 0;
+                break;
+            case 3: // Right
+                x = canvas.width;
+                y = Math.random() * (canvas.height - obstacleSize);
+                dx = -obstacleSpeed;
+                dy = 0;
+                break;
+        }
+
+        if (difficulty === 'hard' || difficulty === 'impossible') {
+            const diagonal = Math.random() < 0.5;
+            if (diagonal) {
+                dx *= 0.7;
+                dy *= 0.7;
+            }
+        }
+
+        const size = (difficulty === 'medium' || difficulty === 'hard') ? obstacleSize * 1.5 : obstacleSize;
+
+        obstacles.push({ x, y, width: size, height: size, dx, dy });
+    }
+
+    function drawPlayer() {
+        ctx.fillStyle = player.color;
+        ctx.fillRect(player.x, player.y, player.width, player.height);
+    }
+
+    function drawObstacles() {
+        ctx.fillStyle = 'red';
+        obstacles.forEach(obstacle => {
+            ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+        });
+    }
+
+    function movePlayer() {
+        if (keys['ArrowLeft'] && player.x > 0) player.x -= player.speed;
+        if (keys['ArrowRight'] && player.x < canvas.width - player.width) player.x += player.speed;
+        if (keys['ArrowUp'] && player.y > 0) player.y -= player.speed;
+        if (keys['ArrowDown'] && player.y < canvas.height - player.height) player.y += player.speed;
+    }
+
+    function moveObstacles() {
+        obstacles.forEach(obstacle => {
+            obstacle.x += obstacle.dx;
+            obstacle.y += obstacle.dy;
+            if (obstacle.x < -obstacle.width || obstacle.x > canvas.width || obstacle.y < -obstacle.height || obstacle.y > canvas.height) {
+                obstacles.shift();
+                score++;
+            }
+        });
+    }
+
+    function checkCollision() {
+        for (const obstacle of obstacles) {
+            if (player.x < obstacle.x + obstacle.width &&
+                player.x + player.width > obstacle.x &&
+                player.y < obstacle.y + obstacle.height &&
+                player.y + player.height > obstacle.y) {
+                gameOver = true;
+            }
+        }
+    }
+
+    function update() {
+        if (gameOver) {
+            ctx.fillStyle = 'white';
+            ctx.font = '48px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Game Over', canvas.width / 2, canvas.height / 2);
+            ctx.font = '24px Arial';
+            ctx.fillText('Score: ' + score, canvas.width / 2, canvas.height / 2 + 50);
+            return;
+        }
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawPlayer();
+        drawObstacles();
+        movePlayer();
+        moveObstacles();
+        checkCollision();
+
+        requestAnimationFrame(update);
+    }
+
+    const keys = {};
+    window.addEventListener('keydown', (e) => { keys[e.key] = true; });
+    window.addEventListener('keyup', (e) => { keys[e.key] = false; });
+
+    function handleResize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        player.x = canvas.width / 2;
+        player.y = canvas.height / 2;
+    }
+    window.addEventListener('resize', handleResize);
+
+</script>
+</body>
+</html>

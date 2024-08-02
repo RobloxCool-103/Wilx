@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maze Generator</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        canvas {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="mazeCanvas" width="500" height="500"></canvas>
+    <script>
+        const canvas = document.getElementById('mazeCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const rows = 20;
+        const cols = 20;
+        const cellSize = canvas.width / cols;
+
+        class Cell {
+            constructor(row, col) {
+                this.row = row;
+                this.col = col;
+                this.walls = [true, true, true, true]; // top, right, bottom, left
+                this.visited = false;
+            }
+
+            draw() {
+                const x = this.col * cellSize;
+                const y = this.row * cellSize;
+                ctx.strokeStyle = 'black';
+                ctx.lineWidth = 2;
+
+                if (this.walls[0]) {
+                    ctx.moveTo(x, y);
+                    ctx.lineTo(x + cellSize, y);
+                }
+                if (this.walls[1]) {
+                    ctx.moveTo(x + cellSize, y);
+                    ctx.lineTo(x + cellSize, y + cellSize);
+                }
+                if (this.walls[2]) {
+                    ctx.moveTo(x + cellSize, y + cellSize);
+                    ctx.lineTo(x, y + cellSize);
+                }
+                if (this.walls[3]) {
+                    ctx.moveTo(x, y + cellSize);
+                    ctx.lineTo(x, y);
+                }
+
+                ctx.stroke();
+            }
+
+            highlight() {
+                const x = this.col * cellSize;
+                const y = this.row * cellSize;
+                ctx.fillStyle = 'green';
+                ctx.fillRect(x, y, cellSize, cellSize);
+            }
+
+            checkNeighbors() {
+                const neighbors = [];
+                const directions = [
+                    [-1, 0], // top
+                    [0, 1], // right
+                    [1, 0], // bottom
+                    [0, -1] // left
+                ];
+
+                for (const [dr, dc] of directions) {
+                    const newRow = this.row + dr;
+                    const newCol = this.col + dc;
+                    if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols) {
+                        const neighbor = grid[newRow][newCol];
+                        if (!neighbor.visited) {
+                            neighbors.push(neighbor);
+                        }
+                    }
+                }
+
+                if (neighbors.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * neighbors.length);
+                    return neighbors[randomIndex];
+                } else {
+                    return undefined;
+                }
+            }
+        }
+
+        const grid = [];
+        for (let row = 0; row < rows; row++) {
+            grid[row] = [];
+            for (let col = 0; col < cols; col++) {
+                grid[row][col] = new Cell(row, col);
+            }
+        }
+
+        let current = grid[0][0];
+        const stack = [];
+
+        function drawMaze() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cols; col++) {
+                    grid[row][col].draw();
+                }
+            }
+        }
+
+        function removeWalls(a, b) {
+            const x = a.col - b.col;
+            if (x === 1) {
+                a.walls[3] = false;
+                b.walls[1] = false;
+            } else if (x === -1) {
+                a.walls[1] = false;
+                b.walls[3] = false;
+            }
+
+            const y = a.row - b.row;
+            if (y === 1) {
+                a.walls[0] = false;
+                b.walls[2] = false;
+            } else if (y === -1) {
+                a.walls[2] = false;
+                b.walls[0] = false;
+            }
+        }
+
+        function generateMaze() {
+            current.visited = true;
+            const next = current.checkNeighbors();
+
+            if (next) {
+                next.visited = true;
+                stack.push(current);
+                removeWalls(current, next);
+                current = next;
+            } else if (stack.length > 0) {
+                current = stack.pop();
+            }
+
+            drawMaze();
+            if (stack.length > 0) {
+                requestAnimationFrame(generateMaze);
+            }
+        }
+
+        generateMaze();
+    </script>
+</body>
+</html>

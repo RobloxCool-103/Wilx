@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snake Drawing</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f0f0f0;
+      margin: 0;
+    }
+    .snake {
+      display: flex;
+      position: relative;
+    }
+    .segment {
+      width: 50px;
+      height: 50px;
+      background-color: green;
+      border: 2px solid darkgreen;
+      border-radius: 10px;
+    }
+    .segment.head {
+      background-color: darkgreen;
+      position: relative;
+    }
+    .eye {
+      width: 10px;
+      height: 10px;
+      background-color: white;
+      border-radius: 50%;
+      position: absolute;
+      top: 10px;
+    }
+    .eye.left {
+      left: 10px;
+    }
+    .eye.right {
+      right: 10px;
+    }
+    .tongue {
+      width: 10px;
+      height: 20px;
+      background-color: red;
+      position: absolute;
+      bottom: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 50%;
+    }
+  </style>
+</head>
+<body>
+  <div class="snake">
+    <div class="segment head">
+      <div class="eye left"></div>
+      <div class="eye right"></div>
+      <div class="tongue"></div>
+    </div>
+    <div class="segment"></div>
+    <div class="segment"></div>
+    <div class="segment"></div>
+    <div class="segment"></div>
+  </div>
+</body>
+</html>

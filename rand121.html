@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>HTML5 Platformer Game with Editing Toolbox</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+    canvas {
+      display: block;
+      background: #87CEEB;
+    }
+    .control-panel {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 10;
+    }
+    .control-panel button {
+      margin: 5px;
+      padding: 10px;
+      font-size: 16px;
+    }
+    .game-over-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-size: 24px;
+      display: none;
+      flex-direction: column;
+    }
+    .game-over-overlay button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 20px;
+      cursor: pointer;
+    }
+    .toolbox {
+      position: fixed;
+      top: 50px;
+      left: 10px;
+      z-index: 10;
+      display: none;
+      background: #fff;
+      border: 1px solid #ccc;
+      padding: 10px;
+    }
+    .toolbox button {
+      display: block;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+<div class="control-panel">
+  <button id="editModeBtn">Edit Mode</button>
+  <button id="playModeBtn">Play Mode</button>
+</div>
+<canvas id="gameCanvas"></canvas>
+<div class="game-over-overlay" id="gameOverOverlay">
+  <div>Game Over!</div>
+  <button id="tryAgainBtn">Try Again</button>
+</div>
+<div class="toolbox" id="toolbox">
+  <button data-tool="platform">Platform</button>
+  <button data-tool="jumpBlock">Jump Block</button>
+  <button data-tool="killBrick">Kill Brick</button>
+  <button data-tool="scoreBlock">Score Block</button>
+</div>
+<script>
+  const canvas = document.getElementById('gameCanvas');
+  const ctx = canvas.getContext('2d');
+  const gameOverOverlay = document.getElementById('gameOverOverlay');
+  const tryAgainBtn = document.getElementById('tryAgainBtn');
+  const toolbox = document.getElementById('toolbox');
+
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const player = {
+    x: 50,
+    y: canvas.height - 150,
+    width: 50,
+    height: 50,
+    color: 'red',
+    dy: 0,
+    dx: 0,
+    speed: 5,
+    gravity: 0.5,
+    jumpStrength: 10,
+    isJumping: false,
+    isGrounded: false,
+  };
+
+  const keys = {
+    left: false,
+    right: false,
+    space: false,
+  };
+
+  let platforms = [
+    { x: 0, y: canvas.height - 100, width: canvas.width, height: 100, color: 'green' },
+    { x: 300, y: canvas.height - 200, width: 100, height: 20, color: 'green' },
+    { x: 600, y: canvas.height - 300, width: 150, height: 20, color: 'green' },
+    { x: 900, y: canvas.height - 400, width: 200, height: 20, color: 'green' }
+  ];
+
+  let obstacles = [
+    { x: 500, y: canvas.height - 140, width: 20, height: 40, color: 'blue' },
+    { x: 800, y: canvas.height - 240, width: 20, height: 40, color: 'blue' }
+  ];
+
+  let jumpBlocks = [
+    { x: 1200, y: canvas.height - 140, width: 50, height: 20, color: 'yellow', bounce: 15 }
+  ];
+
+  let scoreBlocks = [
+    { x: 1500, y: canvas.height - 160, width: 30, height: 30, color: 'gold', scoreValue: 10 }
+  ];
+
+  let cameraX = 0;
+  let score = 0;
+  let isEditing = false;
+  let selectedElement = null;
+  let gameOver = false;
+  let selectedTool = null;
+
+  // Buttons to toggle between Edit and Play modes
+  document.getElementById('editModeBtn').addEventListener('click', () => {
+    isEditing = true;
+    toolbox.style.display = 'block';
+  });
+
+  document.getElementById('playModeBtn').addEventListener('click', () => {
+    isEditing = false;
+    toolbox.style.display = 'none';
+  });
+
+  tryAgainBtn.addEventListener('click', () => {
+    // Reset the game state
+    gameOver = false;
+    gameOverOverlay.style.display = 'none';
+    player.x = 50;
+    player.y = canvas.height - 150;
+    player.dy = 0;
+    player.dx = 0;
+    score = 0;
+    // Optionally, reset score blocks or other game elements if needed
+  });
+
+  // Tool selection
+  document.querySelectorAll('.toolbox button').forEach(button => {
+    button.addEventListener('click', () => {
+      selectedTool = button.getAttribute('data-tool');
+    });
+  });
+
+  window.addEventListener('keydown', function(e) {
+    if (e.code === 'ArrowLeft') keys.left = true;
+    if (e.code === 'ArrowRight') keys.right = true;
+    if (e.code === 'Space' && !player.isJumping) {
+      player.isJumping = true;
+      player.dy = -player.jumpStrength;
+    }
+  });
+
+  window.addEventListener('keyup', function(e) {
+    if (e.code === 'ArrowLeft') keys.left = false;
+    if (e.code === 'ArrowRight') keys.right = false;
+  });
+
+  canvas.addEventListener('mousedown', function(e) {
+    if (isEditing) {
+      const mouseX = e.clientX + cameraX;
+      const mouseY = e.clientY;
+
+      if (selectedTool) {
+        // Create new element based on selected tool
+        let newElement = null;
+        switch (selectedTool) {
+          case 'platform':
+            newElement = { x: mouseX, y: mouseY, width: 100, height: 20, color: 'green' };
+            platforms.push(newElement);
+            break;
+          case 'jumpBlock':
+            newElement = { x: mouseX, y: mouseY, width: 50, height: 20, color: 'yellow', bounce: 15 };
+            jumpBlocks.push(newElement);
+            break;
+          case 'killBrick':
+            newElement = { x: mouseX, y: mouseY, width: 20, height: 40, color: 'blue' };
+            obstacles.push(newElement);
+            break;
+          case 'scoreBlock':
+            newElement = { x: mouseX, y: mouseY, width: 30, height: 30, color: 'gold', scoreValue: 10 };
+            scoreBlocks.push(newElement);
+            break;
+        }
+        selectedTool = null; // Reset the selected tool
+      } else {
+        // Check for selection of an existing element
+        [platforms, obstacles, jumpBlocks, scoreBlocks].forEach(group => {
+          group.forEach(element => {
+            if (
+              mouseX >= element.x &&
+              mouseX <= element.x + element.width &&
+              mouseY >= element.y &&
+              mouseY <= element.y + element.height
+            ) {
+              selectedElement = element;
+            }
+          });
+        });
+      }
+    }
+  });
+
+  canvas.addEventListener('mousemove', function(e) {
+    if (isEditing && selectedElement) {
+      selectedElement.x = e.clientX + cameraX - selectedElement.width / 2;
+      selectedElement.y = e.clientY - selectedElement.height / 2;
+    }
+  });
+
+  canvas.addEventListener('mouseup', function() {
+    if (isEditing) {
+      selectedElement = null;
+    }
+  });
+
+  function gameLoop() {
+    if (!gameOver) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Player movement
+      if (!isEditing) {
+        player.dx = 0;
+        if (keys.left) player.dx = -player.speed;
+        if (keys.right) player.dx = player.speed;
+
+        player.x += player.dx;
+
+        // Camera follows player
+        cameraX = player.x - canvas.width / 2;
+        if (cameraX < 0) cameraX = 0;
+
+        // Gravity and jumping
+        player.dy += player.gravity;
+        player.y += player.dy;
+
+        // Check for collisions with platforms
+        player.isGrounded = false;
+        platforms.forEach(platform => {
+          if (
+            player.x < platform.x + platform.width &&
+            player.x + player.width > platform.x &&
+            player.y < platform.y + platform.height &&
+            player.y + player.height > platform.y
+          ) {
+            player.y = platform.y - player.height;
+            player.isGrounded = true;
+            player.isJumping = false;
+            player.dy = 0;
+          }
+        });
+
+        if (!player.isGrounded) {
+          player.isJumping = true;
+        }
+
+        // Check for collisions with jump blocks
+        jumpBlocks.forEach(jumpBlock => {
+          if (
+            player.x < jumpBlock.x + jumpBlock.width &&
+            player.x + player.width > jumpBlock.x &&
+            player.y < jumpBlock.y + jumpBlock.height &&
+            player.y + player.height > jumpBlock.y
+          ) {
+            player.dy = -jumpBlock.bounce;
+          }
+        });
+
+        // Check for collisions with score blocks
+        scoreBlocks.forEach((scoreBlock, index) => {
+          if (
+            player.x < scoreBlock.x + scoreBlock.width &&
+            player.x + player.width > scoreBlock.x &&
+            player.y < scoreBlock.y + scoreBlock.height &&
+            player.y + player.height > scoreBlock.y
+          ) {
+            score += scoreBlock.scoreValue;
+            scoreBlocks.splice(index, 1); // Remove the block once collected
+          }
+        });
+
+        // Check for collisions with obstacles
+        obstacles.forEach(obstacle => {
+          if (
+            player.x < obstacle.x + obstacle.width &&
+            player.x + player.width > obstacle.x &&
+            player.y < obstacle.y + obstacle.height &&
+            player.y + player.height > obstacle.y
+          ) {
+            gameOver = true;
+            gameOverOverlay.style.display = 'flex';
+          }
+        });
+      }
+
+      // Draw the player
+      ctx.fillStyle = player.color;
+      ctx.fillRect(player.x - cameraX, player.y, player.width, player.height);
+
+      // Draw platforms
+      platforms.forEach(platform => {
+        ctx.fillStyle = platform.color;
+        ctx.fillRect(platform.x - cameraX, platform.y, platform.width, platform.height);
+      });
+
+      // Draw obstacles
+      obstacles.forEach(obstacle => {
+        ctx.fillStyle = obstacle.color;
+        ctx.fillRect(obstacle.x - cameraX, obstacle.y, obstacle.width, obstacle.height);
+      });
+
+      // Draw jump blocks
+      jumpBlocks.forEach(jumpBlock => {
+        ctx.fillStyle = jumpBlock.color;
+        ctx.fillRect(jumpBlock.x - cameraX, jumpBlock.y, jumpBlock.width, jumpBlock.height);
+      });
+
+      // Draw score blocks
+      scoreBlocks.forEach(scoreBlock => {
+        ctx.fillStyle = scoreBlock.color;
+        ctx.fillRect(scoreBlock.x - cameraX, scoreBlock.y, scoreBlock.width, scoreBlock.height);
+      });
+
+      // Draw score
+      ctx.fillStyle = 'black';
+      ctx.font = '24px Arial';
+      ctx.fillText('Score: ' + score, 10, 30);
+
+      // Draw editing mode status
+      if (isEditing) {
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = 'black';
+        ctx.font = '24px Arial';
+        ctx.fillText('Editing Mode', canvas.width / 2 - 60, 30);
+      }
+
+      requestAnimationFrame(gameLoop);
+    }
+  }
+
+  gameLoop();
+</script>
+</body>
+</html>

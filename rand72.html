@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sequence Calculator(s)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .sequence {
+            margin-bottom: 20px;
+        }
+        label, button {
+            display: block;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Sequence Calculator</h1>
+
+    <div class="sequence">
+        <h2>Prime Numbers</h2>
+        <label for="primeInput">Number of terms:</label>
+        <input type="number" id="primeInput" value="10">
+        <button onclick="calculatePrimes()">Calculate</button>
+        <p id="primeOutput"></p>
+    </div>
+
+    <div class="sequence">
+        <h2>Fibonacci Sequence</h2>
+        <label for="fibonacciInput">Number of terms:</label>
+        <input type="number" id="fibonacciInput" value="10">
+        <button onclick="calculateFibonacci()">Calculate</button>
+        <p id="fibonacciOutput"></p>
+    </div>
+
+    <div class="sequence">
+        <h2>Odd Numbers</h2>
+        <label for="oddInput">Number of terms:</label>
+        <input type="number" id="oddInput" value="10">
+        <button onclick="calculateOdd()">Calculate</button>
+        <p id="oddOutput"></p>
+    </div>
+
+    <div class="sequence">
+        <h2>Even Numbers</h2>
+        <label for="evenInput">Number of terms:</label>
+        <input type="number" id="evenInput" value="10">
+        <button onclick="calculateEven()">Calculate</button>
+        <p id="evenOutput"></p>
+    </div>
+
+    <div class="sequence">
+        <h2>Triangular Numbers</h2>
+        <label for="triangularInput">Number of terms:</label>
+        <input type="number" id="triangularInput" value="10">
+        <button onclick="calculateTriangular()">Calculate</button>
+        <p id="triangularOutput"></p>
+    </div>
+
+    <div class="sequence">
+        <h2>Square Numbers</h2>
+        <label for="squareInput">Number of terms:</label>
+        <input type="number" id="squareInput" value="10">
+        <button onclick="calculateSquare()">Calculate</button>
+        <p id="squareOutput"></p>
+    </div>
+
+    <div class="sequence">
+        <h2>Cube Numbers</h2>
+        <label for="cubeInput">Number of terms:</label>
+        <input type="number" id="cubeInput" value="10">
+        <button onclick="calculateCube()">Calculate</button>
+        <p id="cubeOutput"></p>
+    </div>
+
+    <div class="sequence">
+        <h2>Factorials</h2>
+        <label for="factorialInput">Number of terms:</label>
+        <input type="number" id="factorialInput" value="10">
+        <button onclick="calculateFactorials()">Calculate</button>
+        <p id="factorialOutput"></p>
+    </div>
+
+    <div class="sequence">
+        <h2>Powers of 2</h2>
+        <label for="powersOf2Input">Number of terms:</label>
+        <input type="number" id="powersOf2Input" value="10">
+        <button onclick="calculatePowersOf2()">Calculate</button>
+        <p id="powersOf2Output"></p>
+    </div>
+
+    <div class="sequence">
+        <h2>Harmonic Series</h2>
+        <label for="harmonicInput">Number of terms:</label>
+        <input type="number" id="harmonicInput" value="10">
+        <button onclick="calculateHarmonic()">Calculate</button>
+        <p id="harmonicOutput"></p>
+    </div>
+
+    <div class="sequence">
+        <h2>Pentagonal Numbers</h2>
+        <label for="pentagonalInput">Number of terms:</label>
+        <input type="number" id="pentagonalInput" value="10">
+        <button onclick="calculatePentagonal()">Calculate</button>
+        <p id="pentagonalOutput"></p>
+    </div>
+
+    <div class="sequence">
+        <h2>Hexagonal Numbers</h2>
+        <label for="hexagonalInput">Number of terms:</label>
+        <input type="number" id="hexagonalInput" value="10">
+        <button onclick="calculateHexagonal()">Calculate</button>
+        <p id="hexagonalOutput"></p>
+    </div>
+
+    <div class="sequence">
+        <h2>Catalan Numbers</h2>
+        <label for="catalanInput">Number of terms:</label>
+        <input type="number" id="catalanInput" value="10">
+        <button onclick="calculateCatalan()">Calculate</button>
+        <p id="catalanOutput"></p>
+    </div>
+
+    <div class="sequence">
+        <h2>Lucas Numbers</h2>
+        <label for="lucasInput">Number of terms:</label>
+        <input type="number" id="lucasInput" value="10">
+        <button onclick="calculateLucas()">Calculate</button>
+        <p id="lucasOutput"></p>
+    </div>
+
+    <div class="sequence">
+        <h2>Mersenne Primes</h2>
+        <label for="mersenneInput">Number of terms:</label>
+        <input type="number" id="mersenneInput" value="10">
+        <button onclick="calculateMersenne()">Calculate</button>
+        <p id="mersenneOutput"></p>
+    </div>
+
+    <div class="sequence">
+        <h2>Bell Numbers</h2>
+        <label for="bellInput">Number of terms:</label>
+        <input type="number" id="bellInput" value="10">
+        <button onclick="calculateBell()">Calculate</button>
+        <p id="bellOutput"></p>
+    </div>
+
+    <div class="sequence">
+        <h2>Sophie Germain Primes</h2>
+        <label for="sophieInput">Number of terms:</label>
+        <input type="number" id="sophieInput" value="10">
+        <button onclick="calculateSophie()">Calculate</button>
+        <p id="sophieOutput"></p>
+    </div>
+
+    <div class="sequence">
+        <h2>Perfect Numbers</h2>
+        <label for="perfectInput">Number of terms:</label>
+        <input type="number" id="perfectInput" value="10">
+        <button onclick="calculatePerfect()">Calculate</button>
+        <p id="perfectOutput"></p>
+    </div>
+
+    <div class="sequence">
+        <h2>Niven Numbers</h2>
+        <label for="nivenInput">Number of terms:</label>
+        <input type="number" id="nivenInput" value="10">
+        <button onclick="calculateNiven()">Calculate</button>
+        <p id="nivenOutput"></p>
+    </div>
+
+    <div class="sequence">
+        <h2>Automorphic Numbers</h2>
+        <label for="automorphicInput">Number of terms:</label>
+        <input type="number" id="automorphicInput" value="10">
+        <button onclick="calculateAutomorphic()">Calculate</button>
+        <p id="automorphicOutput"></p>
+    </div>
+
+    <div class="sequence">
+        <h2>Highly Composite Numbers</h2>
+        <label for="highlyCompositeInput">Number of terms:</label>
+        <input type="number" id="highlyCompositeInput" value="10">
+        <button onclick="calculateHighlyComposite()">Calculate</button>
+        <p id="highlyCompositeOutput"></p>
+    </div>
+
+    <div class="sequence">
+        <h2>Twin Primes</h2>
+        <label for="twinPrimesInput">Number of pairs:</label>
+        <input type="number" id="twinPrimesInput" value="10">
+        <button onclick="calculateTwinPrimes()">Calculate</button>
+        <p id="twinPrimesOutput"></p>
+    </div>
+
+    <div class="sequence">
+        <h2>Happy Numbers</h2>
+        <label for="happyInput">Number of terms:</label>
+        <input type="number" id="happyInput" value="10">
+        <button onclick="calculateHappy()">Calculate</button>
+        <p id="happyOutput"></p>
+    </div>
+
+    <div class="sequence">
+        <h2>Centered Hexagonal Numbers</h2>
+        <label for="centeredHexagonalInput">Number of terms:</label>
+        <input type="number" id="centeredHexagonalInput" value="10">
+        <button onclick="calculateCenteredHexagonal()">Calculate</button>
+        <p id="centeredHexagonalOutput"></p>
+    </div>
+
+    <div class="sequence">
+        <h2>Thabit Numbers</h2>
+        <label for="thabitInput">Number of terms:</label>
+        <input type="number" id="thabitInput" value="10">
+        <button onclick="calculateThabit()">Calculate</button>
+        <p id="thabitOutput"></p>
+    </div>
+
+    <script>
+        function calculatePrimes() {
+            const n = document.getElementById('primeInput').value;
+            const primes = [];
+            let candidate = 2;
+            while (primes.length < n) {
+                let isPrime = true;
+                for (let i = 2; i <= Math.sqrt(candidate); i++) {
+                    if (candidate % i === 0) {
+                        isPrime = false;
+                        break;
+                    }
+                }
+                if (isPrime) {
+                    primes.push(candidate);
+                }
+                candidate++;
+            }
+            document.getElementById('primeOutput').innerText = primes.join(', ');
+        }
+
+        function calculateFibonacci() {
+            const n = document.getElementById('fibonacciInput').value;
+            const fib = [0, 1];
+            for (let i = 2; i < n; i++) {
+                fib.push(fib[i - 1] + fib[i - 2]);
+            }
+            document.getElementById('fibonacciOutput').innerText = fib.slice(0, n).join(', ');
+        }
+
+        function calculateOdd() {
+            const n = document.getElementById('oddInput').value;
+            const odds = [];
+            for (let i = 0; i < n; i++) {
+                odds.push(2 * i + 1);
+            }
+            document.getElementById('oddOutput').innerText = odds.join(', ');
+        }
+
+        function calculateEven() {
+            const n = document.getElementById('evenInput').value;
+            const evens = [];
+            for (let i = 1; i <= n; i++) {
+                evens.push(2 * i);
+            }
+            document.getElementById('evenOutput').innerText = evens.join(', ');
+        }
+
+        function calculateTriangular() {
+            const n = document.getElementById('triangularInput').value;
+            const triangulars = [];
+            for (let i = 1; i <= n; i++) {
+                triangulars.push((i * (i + 1)) / 2);
+            }
+            document.getElementById('triangularOutput').innerText = triangulars.join(', ');
+        }
+
+        function calculateSquare() {
+            const n = document.getElementById('squareInput').value;
+            const squares = [];
+            for (let i = 1; i <= n; i++) {
+                squares.push(i * i);
+            }
+            document.getElementById('squareOutput').innerText = squares.join(', ');
+        }
+
+        function calculateCube() {
+            const n = document.getElementById('cubeInput').value;
+            const cubes = [];
+            for (let i = 1; i <= n; i++) {
+                cubes.push(i * i * i);
+            }
+            document.getElementById('cubeOutput').innerText = cubes.join(', ');
+        }
+
+        function calculateFactorials() {
+            const n = document.getElementById('factorialInput').value;
+            const factorials = [1];
+            for (let i = 1; i < n; i++) {
+                factorials.push(factorials[i - 1] * i);
+            }
+            document.getElementById('factorialOutput').innerText = factorials.join(', ');
+        }
+
+        function calculatePowersOf2() {
+            const n = document.getElementById('powersOf2Input').value;
+            const powersOf2 = [];
+            for (let i = 0; i < n; i++) {
+                powersOf2.push(Math.pow(2, i));
+            }
+            document.getElementById('powersOf2Output').innerText = powersOf2.join(', ');
+        }
+
+        function calculateHarmonic() {
+            const n = document.getElementById('harmonicInput').value;
+            const harmonic = [];
+            for (let i = 1; i <= n; i++) {
+                harmonic.push(1 / i);
+            }
+            document.getElementById('harmonicOutput').innerText = harmonic.join(', ');
+        }
+
+        function calculatePentagonal() {
+            const n = document.getElementById('pentagonalInput').value;
+            const pentagonal = [];
+            for (let i = 1; i <= n; i++) {
+                pentagonal.push((i * (3 * i - 1)) / 2);
+            }
+            document.getElementById('pentagonalOutput').innerText = pentagonal.join(', ');
+        }
+
+        function calculateHexagonal() {
+            const n = document.getElementById('hexagonalInput').value;
+            const hexagonal = [];
+            for (let i = 1; i <= n; i++) {
+                hexagonal.push(i * (2 * i - 1));
+            }
+            document.getElementById('hexagonalOutput').innerText = hexagonal.join(', ');
+        }
+
+        function calculateCatalan() {
+            const n = document.getElementById('catalanInput').value;
+            const catalan = [1];
+            for (let i = 1; i < n; i++) {
+                let catNum = 0;
+                for (let j = 0; j < i; j++) {
+                    catNum += catalan[j] * catalan[i - 1 - j];
+                }
+                catalan.push(catNum);
+            }
+            document.getElementById('catalanOutput').innerText = catalan.join(', ');
+        }
+
+        function calculateLucas() {
+            const n = document.getElementById('lucasInput').value;
+            const lucas = [2, 1];
+            for (let i = 2; i < n; i++) {
+                lucas.push(lucas[i - 1] + lucas[i - 2]);
+            }
+            document.getElementById('lucasOutput').innerText = lucas.slice(0, n).join(', ');
+        }
+
+        function calculateMersenne() {
+            const n = document.getElementById('mersenneInput').value;
+            const mersenne = [];
+            let count = 0;
+            let p = 2;
+            while (count < n) {
+                if (isPrime(p)) {
+                    mersenne.push(Math.pow(2, p) - 1);
+                    count++;
+                }
+                p++;
+            }
+            document.getElementById('mersenneOutput').innerText = mersenne.join(', ');
+        }
+
+        function calculateBell() {
+            const n = document.getElementById('bellInput').value;
+            const bell = [1];
+            for (let i = 1; i < n; i++) {
+                bell.push(Array(i).fill(0).reduce((sum, _, j) => sum + binomialCoefficient(i - 1, j) * bell[j], 0));
+            }
+            document.getElementById('bellOutput').innerText = bell.join(', ');
+        }
+
+        function calculateSophie() {
+            const n = document.getElementById('sophieInput').value;
+            const sophie = [];
+            let candidate = 2;
+            while (sophie.length < n) {
+                if (isPrime(candidate) && isPrime(2 * candidate + 1)) {
+                    sophie.push(candidate);
+                }
+                candidate++;
+            }
+            document.getElementById('sophieOutput').innerText = sophie.join(', ');
+        }
+
+        function calculatePerfect() {
+            const n = document.getElementById('perfectInput').value;
+            const perfect = [];
+            let i = 2;
+            while (perfect.length < n) {
+                let sum = 1;
+                for (let j = 2; j <= Math.sqrt(i); j++) {
+                    if (i % j === 0) {
+                        sum += j + (i / j === j ? 0 : i / j);
+                    }
+                }
+                if (sum === i) {
+                    perfect.push(i);
+                }
+                i++;
+            }
+            document.getElementById('perfectOutput').innerText = perfect.join(', ');
+        }
+
+        function calculateNiven() {
+            const n = document.getElementById('nivenInput').value;
+            const niven = [];
+            let i = 1;
+            while (niven.length < n) {
+                if (i % sumOfDigits(i) === 0) {
+                    niven.push(i);
+                }
+                i++;
+            }
+            document.getElementById('nivenOutput').innerText = niven.join(', ');
+        }
+
+        function calculateAutomorphic() {
+            const n = document.getElementById('automorphicInput').value;
+            const automorphic = [];
+            let i = 1;
+            while (automorphic.length < n) {
+                if (String(i * i).endsWith(String(i))) {
+                    automorphic.push(i);
+                }
+                i++;
+            }
+            document.getElementById('automorphicOutput').innerText = automorphic.join(', ');
+        }
+
+        function calculateHighlyComposite() {
+            const n = document.getElementById('highlyCompositeInput').value;
+            const highlyComposite = [1];
+            let i = 2;
+            while (highlyComposite.length < n) {
+                if (numberOfDivisors(i) > numberOfDivisors(highlyComposite[highlyComposite.length - 1])) {
+                    highlyComposite.push(i);
+                }
+                i++;
+            }
+            document.getElementById('highlyCompositeOutput').innerText = highlyComposite.join(', ');
+        }
+
+        function calculateTwinPrimes() {
+            const n = document.getElementById('twinPrimesInput').value;
+            const twinPrimes = [];
+            let candidate = 2;
+            while (twinPrimes.length < n) {
+                if (isPrime(candidate) && isPrime(candidate + 2)) {
+                    twinPrimes.push(`(${candidate}, ${candidate + 2})`);
+                }
+                candidate++;
+            }
+            document.getElementById('twinPrimesOutput').innerText = twinPrimes.join(', ');
+        }
+
+        function calculateHappy() {
+            const n = document.getElementById('happyInput').value;
+            const happy = [];
+            let i = 1;
+            while (happy.length < n) {
+                if (isHappy(i)) {
+                    happy.push(i);
+                }
+                i++;
+            }
+            document.getElementById('happyOutput').innerText = happy.join(', ');
+        }
+
+        function calculateCenteredHexagonal() {
+            const n = document.getElementById('centeredHexagonalInput').value;
+            const centeredHexagonal = [];
+            for (let i = 0; i < n; i++) {
+                centeredHexagonal.push(3 * i * (i + 1) + 1);
+            }
+            document.getElementById('centeredHexagonalOutput').innerText = centeredHexagonal.join(', ');
+        }
+
+        function calculateThabit() {
+            const n = document.getElementById('thabitInput').value;
+            const thabit = [];
+            for (let i = 0; i < n; i++) {
+                thabit.push(3 * Math.pow(2, i) - 1);
+            }
+            document.getElementById('thabitOutput').innerText = thabit.join(', ');
+        }
+
+        function isPrime(num) {
+            if (num < 2) return false;
+            for (let i = 2; i <= Math.sqrt(num); i++) {
+                if (num % i === 0) return false;
+            }
+            return true;
+        }
+
+        function binomialCoefficient(n, k) {
+            if (k > n) return 0;
+            if (k === 0 || k === n) return 1;
+            let res = 1;
+            for (let i = 1; i <= k; i++) {
+                res *= (n - i + 1);
+                res /= i;
+            }
+            return res;
+        }
+
+        function sumOfDigits(num) {
+            return String(num).split('').reduce((sum, digit) => sum + parseInt(digit), 0);
+        }
+
+        function numberOfDivisors(num) {
+            let divisors = 1;
+            for (let i = 1; i <= num / 2; i++) {
+                if (num % i === 0) divisors++;
+            }
+            return divisors;
+        }
+
+        function isHappy(num) {
+            const seen = new Set();
+            while (num !== 1 && !seen.has(num)) {
+                seen.add(num);
+                num = sumOfDigits(String(num).split('').reduce((sum, digit) => sum + Math.pow(digit, 2), 0));
+            }
+            return num === 1;
+        }
+    </script>
+</body>
+</html>

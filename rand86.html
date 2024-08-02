@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simon Says</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #f0f0f0;
+    }
+
+    .simon-board {
+        display: flex;
+        flex-wrap: wrap;
+        width: 400px;
+        height: 400px;
+    }
+
+    .simon-block {
+        width: 48%;
+        height: 48%;
+        margin: 1%;
+        cursor: pointer;
+    }
+
+    .green {
+        background-color: green;
+    }
+
+    .red {
+        background-color: red;
+    }
+
+    .blue {
+        background-color: blue;
+    }
+
+    .yellow {
+        background-color: yellow;
+    }
+</style>
+</head>
+<body>
+<div class="simon-board">
+    <div class="simon-block green" onclick="handleClick('green')"></div>
+    <div class="simon-block red" onclick="handleClick('red')"></div>
+    <div class="simon-block blue" onclick="handleClick('blue')"></div>
+    <div class="simon-block yellow" onclick="handleClick('yellow')"></div>
+</div>
+
+<script>
+    const sequence = [];
+    let playerIndex = 0;
+    let playerTurn = false;
+
+    function generateSequence() {
+        const colors = ['green', 'red', 'blue', 'yellow'];
+        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+        sequence.push(randomColor);
+        playSequence();
+    }
+
+    function playSequence() {
+        let i = 0;
+        const intervalId = setInterval(() => {
+            flash(sequence[i]);
+            i++;
+            if (i >= sequence.length) {
+                clearInterval(intervalId);
+                playerTurn = true;
+            }
+        }, 1000);
+    }
+
+    function flash(color) {
+        const block = document.querySelector(`.${color}`);
+        block.style.opacity = 0.5;
+        setTimeout(() => {
+            block.style.opacity = 1;
+        }, 500);
+    }
+
+    function handleClick(color) {
+        if (!playerTurn) return;
+        flash(color);
+        if (color === sequence[playerIndex]) {
+            playerIndex++;
+            if (playerIndex === sequence.length) {
+                playerIndex = 0;
+                playerTurn = false;
+                setTimeout(generateSequence, 1000);
+            }
+        } else {
+            alert('Game Over! You made a mistake.');
+            sequence.length = 0; // Reset sequence
+            playerIndex = 0;
+            playerTurn = false;
+        }
+    }
+
+    generateSequence();
+</script>
+</body>
+</html>

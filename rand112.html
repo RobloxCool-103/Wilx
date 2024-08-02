@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yes/No Generator</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+        button {
+            margin: 10px;
+            padding: 10px;
+            font-size: 1.5em;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Yes/No Generator</h1>
+    <button onclick="generateAnswer()">Get Answer</button>
+    <p id="answer"></p>
+    <script>
+        function generateAnswer() {
+            const answers = ['Yes', 'No'];
+            const randomIndex = Math.floor(Math.random() * answers.length);
+            document.getElementById('answer').textContent = answers[randomIndex];
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pantone Color Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        #colorInput {
+            width: 200px;
+            padding: 10px;
+            font-size: 16px;
+        }
+        #colorDisplay {
+            width: 200px;
+            height: 100px;
+            margin-top: 20px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <h2>Pantone Color Converter</h2>
+    <input type="text" id="colorInput" placeholder="Enter Pantone Color Code">
+    <button onclick="convertColor()">Convert</button>
+    <div id="colorDisplay"></div>
+
+    <script>
+        function convertColor() {
+            var colorInput = document.getElementById("colorInput").value.trim();
+            var colorDisplay = document.getElementById("colorDisplay");
+
+            // Regular expression to check Pantone color code format
+            var pantoneRegex = /^(?:PANTONE\s*)?(\d{1,4})\s*(C|U|CP|TPX)?$/i;
+
+            if (pantoneRegex.test(colorInput)) {
+                var colorCode = colorInput.toUpperCase();
+                colorDisplay.style.backgroundColor = "Pantone " + colorCode;
+                colorDisplay.innerHTML = "Pantone " + colorCode;
+            } else {
+                colorDisplay.style.backgroundColor = "#ffffff";
+                colorDisplay.innerHTML = "Invalid Pantone Color Code";
+            }
+        }
+    </script>
+</body>
+</html>

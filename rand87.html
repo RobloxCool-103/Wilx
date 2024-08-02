@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BreakLock</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #f0f0f0;
+    }
+
+    .lock-container {
+        display: flex;
+        flex-wrap: wrap;
+        width: 300px;
+        height: 300px;
+        border: 2px solid black;
+    }
+
+    .dot {
+        width: 80px;
+        height: 80px;
+        background-color: #ccc;
+        border-radius: 50%;
+        margin: 10px;
+        cursor: pointer;
+    }
+
+    .selected {
+        background-color: #007bff;
+    }
+
+    .path {
+        position: absolute;
+        pointer-events: none;
+        z-index: 1;
+    }
+</style>
+</head>
+<body>
+<div class="lock-container">
+    <div class="dot" data-id="1"></div>
+    <div class="dot" data-id="2"></div>
+    <div class="dot" data-id="3"></div>
+    <div class="dot" data-id="4"></div>
+    <div class="dot" data-id="5"></div>
+    <div class="dot" data-id="6"></div>
+    <div class="dot" data-id="7"></div>
+    <div class="dot" data-id="8"></div>
+    <div class="dot" data-id="9"></div>
+</div>
+<svg class="path" width="300" height="300">
+    <path id="lock-path" fill="none" stroke="#007bff" stroke-width="6"/>
+</svg>
+
+<script>
+    const dots = document.querySelectorAll('.dot');
+    const path = document.getElementById('lock-path');
+    let pattern = [];
+
+    dots.forEach(dot => {
+        dot.addEventListener('click', () => {
+            dot.classList.toggle('selected');
+            const dotId = parseInt(dot.getAttribute('data-id'));
+            if (dot.classList.contains('selected')) {
+                pattern.push(dotId);
+            } else {
+                pattern = pattern.filter(id => id !== dotId);
+            }
+            drawPath();
+            checkPattern();
+        });
+    });
+
+    function drawPath() {
+        const pathPoints = pattern.map(id => {
+            const dot = document.querySelector(`.dot[data-id="${id}"]`);
+            const rect = dot.getBoundingClientRect();
+            return [rect.left + rect.width / 2, rect.top + rect.height / 2];
+        });
+        const pathString = pathPoints.reduce((acc, point, index) => {
+            if (index === 0) {
+                return `M ${point[0]} ${point[1]}`;
+            }
+            return `${acc} L ${point[0]} ${point[1]}`;
+        }, '');
+        path.setAttribute('d', pathString);
+    }
+
+    function checkPattern() {
+        const correctPattern = [1, 2, 3, 6, 9]; // Example correct pattern
+        if (pattern.length === correctPattern.length) {
+            const isCorrect = pattern.every((value, index) => value === correctPattern[index]);
+            if (isCorrect) {
+                alert('Congratulations! You broke the lock!');
+                resetLock();
+            } else {
+                alert('Incorrect pattern. Try again.');
+                resetLock();
+            }
+        }
+    }
+
+    function resetLock() {
+        pattern = [];
+        dots.forEach(dot => dot.classList.remove('selected'));
+        drawPath();
+    }
+</script>
+</body>
+</html>

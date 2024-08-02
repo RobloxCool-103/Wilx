@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Typing Speed Test</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+  }
+  
+  #game-container {
+    margin-top: 50px;
+  }
+  
+  #text-display {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  #input-field {
+    font-size: 18px;
+    padding: 5px;
+  }
+</style>
+</head>
+<body>
+<div id="game-container">
+  <div id="text-display"></div>
+  <input type="text" id="input-field" placeholder="Start typing...">
+  <div id="result"></div>
+</div>
+
+<script>
+  const words = ['apple', 'banana', 'cherry', 'date', 'elderberry', 'fig', 'grape', 'honeydew', 'kiwi', 'lemon', 'mango', 'nectarine', 'orange', 'pear', 'quince', 'raspberry', 'strawberry', 'tangerine', 'watermelon', 'apricot', 'blueberry', 'cantaloupe', 'coconut', 'cranberry', 'dragonfruit', 'guava', 'kiwifruit', 'lime', 'lychee', 'papaya', 'pineapple', 'pomegranate', 'rhubarb', 'blackberry', 'boysenberry', 'grapefruit', 'mulberry', 'passionfruit', 'peach', 'plum', 'starfruit', 'avocado', 'persimmon', 'jackfruit', 'kumquat', 'mangosteen', 'nectar', 'quandong', 'yuzu', 'jabuticaba', 'longan', 'rambutan', 'salak', 'sapote', 'soursop', 'ugli', 'ackee', 'breadfruit', 'cherimoya', 'cupuaçu', 'durian', 'guinep', 'hogplum', 'kepel', 'langsat', 'mamey', 'mangaba', 'miracle', 'noni', 'okari', 'salmonberry', 'santol', 'sugarapple', 'tamarillo', 'voavanga', 'waxjambu', 'camu', 'carissa', 'cempedak', 'charichuela', 'genip', 'ilama', 'jaboticaba', 'jobo', 'lúcuma', 'mahaleb', 'mallika', 'nance', 'neflier', 'pawpaw', 'pepino'];
+
+  const textDisplay = document.getElementById('text-display');
+  const inputField = document.getElementById('input-field');
+  const resultElement = document.getElementById('result');
+  let startTime;
+  let endTime;
+
+  function startGame() {
+    const randomIndex = Math.floor(Math.random() * words.length);
+    const randomWord = words[randomIndex];
+    textDisplay.textContent = randomWord;
+    inputField.value = '';
+    inputField.focus();
+    startTime = new Date();
+  }
+
+  function endGame() {
+    endTime = new Date();
+    const elapsedTime = (endTime - startTime) / 1000; // Convert to seconds
+    const typedText = inputField.value.trim();
+    const typedWords = typedText.split(' ');
+    const wordCount = typedWords.length;
+    const accuracy = calculateAccuracy(textDisplay.textContent, typedText);
+    const wpm = calculateWPM(wordCount, elapsedTime);
+    resultElement.textContent = `You typed ${wordCount} words in ${elapsedTime} seconds. Your accuracy is ${accuracy.toFixed(2)}%. Your typing speed is ${wpm.toFixed(2)} WPM.`;
+  }
+
+  function calculateAccuracy(originalText, typedText) {
+    const originalChars = originalText.split('');
+    const typedChars = typedText.split('');
+    let correctCount = 0;
+    for (let i = 0; i < originalChars.length; i++) {
+      if (originalChars[i] === typedChars[i]) {
+        correctCount++;
+      }
+    }
+    return (correctCount / originalChars.length) * 100;
+  }
+
+  function calculateWPM(wordCount, elapsedTime) {
+    const minutes = elapsedTime / 60;
+    return wordCount / minutes;
+  }
+
+  inputField.addEventListener('input', () => {
+    if (inputField.value === textDisplay.textContent) {
+      endGame();
+    }
+  });
+
+  startGame();
+</script>
+</body>
+</html>

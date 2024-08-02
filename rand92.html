@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doodle Game</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+        }
+        canvas {
+            border: 1px solid #000;
+            background-color: #fff;
+        }
+        .controls {
+            margin-top: 10px;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <canvas id="doodleCanvas" width="600" height="400"></canvas>
+        <div class="controls">
+            <button id="startDrawing">Start Drawing</button>
+            <button id="finishDrawing" disabled>Finish Drawing</button>
+        </div>
+        <div id="levelDrawWhatYouCan" class="hidden">
+            <p>Draw what you can!</p>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('doodleCanvas');
+        const context = canvas.getContext('2d');
+        const startButton = document.getElementById('startDrawing');
+        const finishButton = document.getElementById('finishDrawing');
+        const levelMessage = document.getElementById('levelDrawWhatYouCan');
+        
+        let drawing = false;
+        let hidden = true;
+        
+        // To store the drawn paths
+        let paths = [];
+        let currentPath = [];
+
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mousemove', draw);
+
+        startButton.addEventListener('click', () => {
+            drawing = true;
+            hidden = true;
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            startButton.disabled = true;
+            finishButton.disabled = false;
+            levelMessage.classList.remove('hidden');
+        });
+
+        finishButton.addEventListener('click', () => {
+            drawing = false;
+            hidden = false;
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            redrawPaths();
+            startButton.disabled = false;
+            finishButton.disabled = true;
+            levelMessage.classList.add('hidden');
+        });
+
+        function startDrawing(event) {
+            if (drawing) {
+                hidden = true;
+                currentPath = [];
+                paths.push(currentPath);
+                addPoint(event);
+            }
+        }
+
+        function stopDrawing() {
+            if (drawing) {
+                hidden = true;
+            }
+        }
+
+        function draw(event) {
+            if (!drawing) return;
+
+            addPoint(event);
+            if (!hidden) {
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                redrawPaths();
+            }
+        }
+
+        function addPoint(event) {
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            currentPath.push({ x, y });
+        }
+
+        function redrawPaths() {
+            context.lineWidth = 2;
+            context.strokeStyle = '#000';
+            context.lineJoin = 'round';
+            context.lineCap = 'round';
+
+            paths.forEach(path => {
+                context.beginPath();
+                path.forEach((point, index) => {
+                    if (index === 0) {
+                        context.moveTo(point.x, point.y);
+                    } else {
+                        context.lineTo(point.x, point.y);
+                    }
+                });
+                context.stroke();
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Pet Rock</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+        #petRock {
+            width: 200px;
+            height: 200px;
+            background-color: gray;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        #controls {
+            margin-top: 20px;
+        }
+        button {
+            margin: 5px;
+            padding: 10px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+        #status {
+            margin-top: 10px;
+        }
+        #status p {
+            margin: 5px 0;
+        }
+        #miniGame {
+            margin-top: 20px;
+            text-align: center;
+        }
+        #gameCanvas {
+            border: 2px solid black;
+            background-color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div id="petRock">Rocky</div>
+    <div id="status">
+        <p>Name: <span id="petName">Rocky</span></p>
+        <p>Happiness: <span id="happinessLevel">50</span></p>
+        <p>Health: <span id="healthLevel">100</span></p>
+        <p>Last Fed: <span id="lastFed">Never</span></p>
+        <p>Last Played: <span id="lastPlayed">Never</span></p>
+        <p>Status: <span id="statusMessage">Ready for interaction!</span></p>
+        <p>Needs Attention: <span id="needsAttention">No</span></p>
+        <p>Time Until Next Need: <span id="timeUntilNextNeed">0s</span></p>
+    </div>
+    <div id="controls">
+        <label for="name">Name your pet rock: </label>
+        <input type="text" id="name" placeholder="Rocky">
+        <button onclick="namePet()">Name</button>
+        <button onclick="feedPet()">Feed</button>
+        <button onclick="playWithPet()">Play</button>
+        <button onclick="putToBed()">Put to Bed</button>
+        <button onclick="savePet()">Save</button>
+        <input type="file" id="loadFile" style="display: none;" onchange="loadPet(event)">
+        <button onclick="document.getElementById('loadFile').click()">Load</button>
+    </div>
+    <div id="miniGame">
+        <h2>Mini-Game: Catch the Rock!</h2>
+        <canvas id="gameCanvas" width="400" height="300"></canvas>
+        <button onclick="startMiniGame()">Start Game</button>
+    </div>
+    <script>
+        let pet = {
+            name: 'Rocky',
+            happiness: 50,
+            health: 100,
+            lastFed: null,
+            lastPlayed: null,
+            lastSlept: null,
+            status: 'Ready for interaction!',
+            needsAttention: false,
+            lastActionTime: Date.now(),
+            feedCount: 0,
+            timerInterval: null
+        };
+
+        const NEED_INTERVAL = 60000; // 1 minute
+        const DEATH_THRESHOLD = 0;
+        const HAPPINESS_DECREASE_RATE = 0.1; // Happiness decreases over time
+        const HEALTH_DECREASE_RATE = 0.2; // Health decreases over time
+        const MAX_FEED_COUNT = 3; // Maximum feedings before risking death
+        const FEED_DEATH_THRESHOLD = 10; // Health decrease after excessive feeding
+
+        function namePet() {
+            const nameInput = document.getElementById('name');
+            pet.name = nameInput.value || 'Rocky';
+            updatePet();
+        }
+
+        function feedPet() {
+            if (pet.health <= DEATH_THRESHOLD) return;
+            
+            pet.feedCount += 1;
+            
+            if (pet.feedCount > MAX_FEED_COUNT) {
+                pet.health = Math.max(pet.health - FEED_DEATH_THRESHOLD, DEATH_THRESHOLD);
+                pet.status = 'Overfed and feeling sick!';
+            } else {
+                pet.happiness = Math.min(pet.happiness + 10, 100);
+                pet.health = Math.min(pet.health + 5, 100);
+                pet.status = 'Feeling better after a meal!';
+            }
+
+            pet.lastFed = new Date().toLocaleString();
+            pet.needsAttention = false;
+            pet.lastActionTime = Date.now();
+            updatePet();
+        }
+
+        function playWithPet() {
+            if (pet.health <= DEATH_THRESHOLD) return;
+            pet.happiness = Math.min(pet.happiness + 15, 100);
+            pet.health = Math.max(pet.health - 5, DEATH_THRESHOLD);
+            pet.lastPlayed = new Date().toLocaleString();
+            pet.needsAttention = false;
+            pet.status = 'Had a great time playing!';
+            pet.lastActionTime = Date.now();
+            updatePet();
+        }
+
+        function putToBed() {
+            if (pet.health <= DEATH_THRESHOLD) return;
+            pet.happiness = Math.max(pet.happiness - 5, DEATH_THRESHOLD);
+            pet.needsAttention = true;
+            pet.status = 'Sleeping peacefully...';
+            pet.lastSlept = new Date().toLocaleString();
+            pet.lastActionTime = Date.now();
+            updatePet();
+        }
+
+        function updatePet() {
+            if (pet.health <= DEATH_THRESHOLD) {
+                document.getElementById('petRock').innerText = 'RIP';
+                document.getElementById('petRock').style.backgroundColor = 'black';
+                document.getElementById('statusMessage').innerText = 'Your pet has passed away.';
+                document.querySelectorAll('button').forEach(btn => btn.disabled = true);
+                document.getElementById('timeUntilNextNeed').innerText = 'N/A';
+                return;
+            }
+
+            document.getElementById('petRock').innerText = pet.name;
+            document.getElementById('petRock').style.backgroundColor = `hsl(${pet.happiness % 360}, 100%, 50%)`;
+            document.getElementById('petName').innerText = pet.name;
+            document.getElementById('happinessLevel').innerText = pet.happiness;
+            document.getElementById('healthLevel').innerText = pet.health;
+            document.getElementById('lastFed').innerText = pet.lastFed || 'Never';
+            document.getElementById('lastPlayed').innerText = pet.lastPlayed || 'Never';
+            document.getElementById('statusMessage').innerText = pet.status;
+            document.getElementById('needsAttention').innerText = pet.needsAttention ? 'Yes' : 'No';
+            
+            const timeElapsed = Date.now() - pet.lastActionTime;
+            const timeUntilNextNeed = Math.max(NEED_INTERVAL - timeElapsed, 0);
+            document.getElementById('timeUntilNextNeed').innerText = `${Math.ceil(timeUntilNextNeed / 1000)}s`;
+
+            if (timeElapsed >= NEED_INTERVAL) {
+                pet.needsAttention = true;
+                pet.happiness = Math.max(pet.happiness - HAPPINESS_DECREASE_RATE * (timeElapsed / 1000), DEATH_THRESHOLD);
+                pet.health = Math.max(pet.health - HEALTH_DECREASE_RATE * (timeElapsed / 1000), DEATH_THRESHOLD);
+                pet.status = 'Needs immediate attention!';
+                pet.lastActionTime = Date.now(); // Reset timer after update
+                updatePet();
+            }
+        }
+
+        function savePet() {
+            const blob = new Blob([JSON.stringify(pet)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'pet-rock.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function loadPet(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                pet = JSON.parse(e.target.result);
+                updatePet();
+            };
+            reader.readAsText(file);
+        }
+
+        function startMiniGame() {
+            const canvas = document.getElementById('gameCanvas');
+            const ctx = canvas.getContext('2d');
+            const rockRadius = 20;
+            let rockX = Math.random() * (canvas.width - rockRadius * 2) + rockRadius;
+            let rockY = Math.random() * (canvas.height - rockRadius * 2) + rockRadius;
+            let score = 0;
+
+            canvas.addEventListener('click', function(event) {
+                const rect = canvas.getBoundingClientRect();
+                const x = event.clientX - rect.left;
+                const y = event.clientY - rect.top;
+                const distance = Math.sqrt((x - rockX) ** 2 + (y - rockY) ** 2);
+                if (distance < rockRadius) {
+                    score++;
+                    rockX = Math.random() * (canvas.width - rockRadius * 2) + rockRadius;
+                    rockY = Math.random() * (canvas.height - rockRadius * 2) + rockRadius;
+                    updateMiniGame();
+                }
+            });
+
+            function updateMiniGame() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.beginPath();
+                ctx.arc(rockX, rockY, rockRadius, 0, Math.PI * 2);
+                ctx.fillStyle = 'gray';
+                ctx.fill();
+                ctx.stroke();
+                ctx.font = '20px Arial';
+                ctx.fillStyle = 'black';
+                ctx.fillText(`Score: ${score}`, 10, 30);
+            }
+
+            updateMiniGame();
+        }
+
+        function checkNeeds() {
+            updatePet();
+            pet.timerInterval = setTimeout(checkNeeds, 1000); // Check every second
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updatePet();
+            checkNeeds();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Morse Code Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+        #converter {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 300px;
+        }
+        textarea, select, button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div id="converter">
+        <h1>Morse Code Converter</h1>
+        <select id="conversionType">
+            <option value="textToMorse">Text to Morse Code</option>
+            <option value="morseToText">Morse Code to Text</option>
+        </select>
+        <textarea id="inputArea" placeholder="Enter text or Morse code here..." rows="4"></textarea>
+        <button onclick="convert()">Convert</button>
+        <textarea id="outputArea" placeholder="Output will appear here..." rows="4" readonly></textarea>
+    </div>
+    <script>
+        const morseCodeMap = {
+            'a': '.-', 'b': '-...', 'c': '-.-.', 'd': '-..', 'e': '.', 'f': '..-.', 'g': '--.',
+            'h': '....', 'i': '..', 'j': '.---', 'k': '-.-', 'l': '.-..', 'm': '--', 'n': '-.',
+            'o': '---', 'p': '.--.', 'q': '--.-', 'r': '.-.', 's': '...', 't': '-', 'u': '..-',
+            'v': '...-', 'w': '.--', 'x': '-..-', 'y': '-.--', 'z': '--..', '0': '-----',
+            '1': '.----', '2': '..---', '3': '...--', '4': '....-', '5': '.....', '6': '-....',
+            '7': '--...', '8': '---..', '9': '----.', ' ': '/', '.': '.-.-.-', ',': '--..--',
+            '?': '..--..', "'": '.----.', '!': '-.-.--', '/': '-..-.', '(': '-.--.', ')': '-.--.-',
+            '&': '.-...', ':': '---...', ';': '-.-.-.', '=': '-...-', '+': '.-.-.', '-': '-....-',
+            '_': '..--.-', '"': '.-..-.', '$': '...-..-', '@': '.--.-.', 'à': '.--.-', 'ä': '.-.-',
+            'å': '.--.-', 'ą': '.-.-', 'æ': '.-.-', 'ć': '-.-..', 'ĉ': '-.-..', 'ç': '-.-..',
+            'š': '----', 'đ': '..-..', 'ð': '..--.', 'é': '..-..', 'ę': '..-..', 'è': '.-..-',
+            'ł': '.-..-', 'ń': '--.--', 'ñ': '--.--', 'ö': '---.', 'ó': '---.', 'ø': '---.',
+            'ś': '...-...', 'ŝ': '...-.', 'þ': '.--..', 'ü': '..--', 'ź': '--..-.', 'ż': '--..-',
+            '*': '-.-.-', '^': '...-.', '%': '---..-', '#': '......', '<': '.-..-', '>': '..-.',
+            '[': '-.--.', ']': '-.--.-', '{': '-.--.', '}': '-.--.-', '|': '.-.--.', '\\': '.-.-.',
+            '~': '---.', '`': '..--', 'ç': '-.-..', 'Ç': '-.-..', 'Æ': '.-.-', 'Ø': '---.', 
+            'þ': '.--..', 'Þ': '.--..'
+        };
+
+        const textToMorse = (text) => {
+            return text.split('').map(char => morseCodeMap[char.toLowerCase()] || char).join(' ');
+        };
+
+        const morseToText = (morse) => {
+            const reversedMorseCodeMap = Object.fromEntries(Object.entries(morseCodeMap).map(([k, v]) => [v, k]));
+            return morse.split(' ').map(code => reversedMorseCodeMap[code] || code).join('');
+        };
+
+        function convert() {
+            const conversionType = document.getElementById('conversionType').value;
+            const input = document.getElementById('inputArea').value;
+            let output = '';
+
+            if (conversionType === 'textToMorse') {
+                output = textToMorse(input);
+            } else if (conversionType === 'morseToText') {
+                output = morseToText(input);
+            }
+
+            document.getElementById('outputArea').value = output;
+        }
+    </script>
+</body>
+</html>

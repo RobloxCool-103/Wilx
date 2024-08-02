@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unit Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        #app {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 300px;
+        }
+        input[type="number"], select {
+            width: calc(50% - 22px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            background: #4CAF50;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        button:active {
+            background: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <h1>Unit Converter</h1>
+        <input type="number" id="valueInput" placeholder="Value">
+        <select id="unitFrom">
+            <option value="meters">Meters</option>
+            <option value="kilometers">Kilometers</option>
+            <option value="grams">Grams</option>
+            <option value="kilograms">Kilograms</option>
+        </select>
+        <select id="unitTo">
+            <option value="meters">Meters</option>
+            <option value="kilometers">Kilometers</option>
+            <option value="grams">Grams</option>
+            <option value="kilograms">Kilograms</option>
+        </select>
+        <button onclick="convert()">Convert</button>
+        <p id="result"></p>
+    </div>
+
+    <script>
+        function convert() {
+            const value = document.getElementById('valueInput').value;
+            const unitFrom = document.getElementById('unitFrom').value;
+            const unitTo = document.getElementById('unitTo').value;
+            let result;
+
+            if (unitFrom === unitTo) {
+                result = value;
+            } else {
+                const conversionRates = {
+                    meters: { meters: 1, kilometers: 0.001, grams: NaN, kilograms: NaN },
+                    kilometers: { meters: 1000, kilometers: 1, grams: NaN, kilograms: NaN },
+                    grams: { meters: NaN, kilometers: NaN, grams: 1, kilograms: 0.001 },
+                    kilograms: { meters: NaN, kilometers: NaN, grams: 1000, kilograms: 1 }
+                };
+                result = value * conversionRates[unitFrom][unitTo];
+            }
+
+            document.getElementById('result').textContent = result !== NaN ? `Result: ${result} ${unitTo}` : "Conversion not possible";
+        }
+    </script>
+</body>
+</html>

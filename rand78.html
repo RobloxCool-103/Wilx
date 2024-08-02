@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Circle Game</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            flex-direction: column;
+        }
+        #gameArea {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            border: 2px solid black;
+            border-radius: 50%;
+            margin-bottom: 20px;
+        }
+        #player {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background-color: yellow;
+            border-radius: 50%;
+            top: 0;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        #ball {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: red;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        #score {
+            font-size: 24px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameArea">
+        <div id="player"></div>
+        <div id="ball"></div>
+    </div>
+    <div id="score">Score: 0</div>
+    <script>
+        const player = document.getElementById('player');
+        const ball = document.getElementById('ball');
+        const gameArea = document.getElementById('gameArea');
+        const scoreDisplay = document.getElementById('score');
+        const radius = gameArea.clientWidth / 2;
+        const ballSpeed = 2;
+        let playerAngle = 0;
+        let ballAngle = Math.random() * 2 * Math.PI;
+        let ballVelocity = { x: ballSpeed * Math.cos(ballAngle), y: ballSpeed * Math.sin(ballAngle) };
+        let score = 0;
+        let lastCollisionTime = 0;
+        const collisionCooldown = 500; // 500ms cooldown between collisions
+
+        gameArea.addEventListener('mousemove', (e) => {
+            const rect = gameArea.getBoundingClientRect();
+            const x = e.clientX - rect.left - radius;
+            const y = e.clientY - rect.top - radius;
+            playerAngle = Math.atan2(y, x);
+            updatePlayerPosition();
+        });
+        
+        function updatePlayerPosition() {
+            const x = radius + radius * Math.cos(playerAngle);
+            const y = radius + radius * Math.sin(playerAngle);
+            player.style.left = `${x}px`;
+            player.style.top = `${y}px`;
+        }
+        
+        function updateBallPosition() {
+            const x = parseFloat(ball.style.left) + ballVelocity.x;
+            const y = parseFloat(ball.style.top) + ballVelocity.y;
+            ball.style.left = `${x}px`;
+            ball.style.top = `${y}px`;
+        }
+        
+        function checkCollision() {
+            const dx = player.offsetLeft - ball.offsetLeft;
+            const dy = player.offsetTop - ball.offsetTop;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            const currentTime = Date.now();
+            if (distance < 30 && currentTime - lastCollisionTime > collisionCooldown) {
+                lastCollisionTime = currentTime;
+                score++;
+                scoreDisplay.textContent = `Score: ${score}`;
+                
+                const newDirection = Math.random() * 2 * Math.PI;
+                ballAngle = newDirection;
+                ballVelocity = { x: ballSpeed * Math.cos(ballAngle), y: ballSpeed * Math.sin(ballAngle) };
+            }
+        }
+        
+        function checkOutOfBounds() {
+            const ballRect = ball.getBoundingClientRect();
+            const gameAreaRect = gameArea.getBoundingClientRect();
+            if (
+                ballRect.left < gameAreaRect.left ||
+                ballRect.right > gameAreaRect.right ||
+                ballRect.top < gameAreaRect.top ||
+                ballRect.bottom > gameAreaRect.bottom
+            ) {
+                resetGame();
+            }
+        }
+        
+        function resetGame() {
+            score = 0;
+            scoreDisplay.textContent = `Score: ${score}`;
+            playerAngle = 0;
+            ballAngle = Math.random() * 2 * Math.PI;
+            ballVelocity = { x: ballSpeed * Math.cos(ballAngle), y: ballSpeed * Math.sin(ballAngle) };
+            ball.style.left = `${radius}px`;
+            ball.style.top = `${radius}px`;
+            updatePlayerPosition();
+        }
+        
+        function gameLoop() {
+            updateBallPosition();
+            checkCollision();
+            checkOutOfBounds();
+            requestAnimationFrame(gameLoop);
+        }
+        
+        ball.style.left = `${radius}px`;
+        ball.style.top = `${radius}px`;
+        gameLoop();
+    </script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fake Virus Alert</title>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: black;
+            color: white;
+        }
+        #alert {
+            border: 2px solid red;
+            padding: 20px;
+            background-color: black;
+            color: red;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="alert">
+        <h1>Virus Alert!</h1>
+        <p>Your computer has been infected with a virus.</p>
+        <p>System will reset in <span id="countdown">10</span> seconds.</p>
+    </div>
+    <script>
+        let countdown = 10;
+        const countdownElement = document.getElementById('countdown');
+        
+        function updateCountdown() {
+            countdown--;
+            countdownElement.textContent = countdown;
+            if (countdown <= 0) {
+                location.reload();
+            }
+        }
+        
+        setInterval(updateCountdown, 1000);
+    </script>
+</body>
+</html>

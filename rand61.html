@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hoy Bar - Endless Runner</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #87ceeb;
+        }
+        canvas {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="game" width="800" height="400"></canvas>
+    <script>
+        const canvas = document.getElementById('game');
+        const context = canvas.getContext('2d');
+        const width = canvas.width;
+        const height = canvas.height;
+        const JUMP_FORCE = 15;
+        const GRAVITY = 1;
+        const SPEED = 6;
+        const SPAWN_RATE = 100;
+        let player, obstacles, frames, gameOver, keys, animationFrame;
+
+        function init() {
+            player = {
+                x: 80,
+                y: height - 80,
+                width: 40,
+                height: 80, // Height includes head and body
+                dy: 0,
+                grounded: true,
+                color: 'black'
+            };
+            obstacles = [];
+            frames = 0;
+            gameOver = false;
+            keys = {};
+            animationFrame = 0;
+            document.addEventListener('keydown', (e) => keys[e.code] = true);
+            document.addEventListener('keyup', (e) => keys[e.code] = false);
+            loop();
+        }
+
+        function loop() {
+            update();
+            draw();
+            if (!gameOver) {
+                requestAnimationFrame(loop);
+            }
+        }
+
+        function update() {
+            frames++;
+            animationFrame = frames % 20; // Cycling between 0 and 19 for animation
+
+            // Player jump
+            if (keys['Space'] && player.grounded) {
+                player.dy = -JUMP_FORCE;
+                player.grounded = false;
+            }
+            // Apply gravity
+            player.dy += GRAVITY;
+            player.y += player.dy;
+            if (player.y + player.height >= height) {
+                player.y = height - player.height;
+                player.dy = 0;
+                player.grounded = true;
+            }
+            // Spawn obstacles
+            if (frames % SPAWN_RATE === 0) {
+                const size = 30;
+                obstacles.push({
+                    x: width,
+                    y: height - size,
+                    width: size,
+                    height: size,
+                    color: 'green'
+                });
+            }
+            // Move and remove obstacles
+            obstacles.forEach((obstacle, index) => {
+                obstacle.x -= SPEED;
+                if (obstacle.x + obstacle.width < 0) {
+                    obstacles.splice(index, 1);
+                }
+                // Check collision
+                if (player.x < obstacle.x + obstacle.width &&
+                    player.x + player.width > obstacle.x &&
+                    player.y < obstacle.y + obstacle.height &&
+                    player.y + player.height > obstacle.y) {
+                    gameOver = true;
+                }
+            });
+        }
+
+        function drawStickman(x, y, frame) {
+            context.strokeStyle = player.color;
+            context.lineWidth = 2;
+
+            // Head
+            context.beginPath();
+            context.arc(x, y - 60, 10, 0, Math.PI * 2);
+            context.stroke();
+
+            // Body
+            context.beginPath();
+            context.moveTo(x, y - 50);
+            context.lineTo(x, y - 20);
+            context.stroke();
+
+            // Arms animation (simple swinging)
+            context.beginPath();
+            if (player.grounded) {
+                context.moveTo(x, y - 40);
+                context.lineTo(x - 15 + Math.sin(frame * 0.3) * 15, y - 30);
+                context.moveTo(x, y - 40);
+                context.lineTo(x + 15 - Math.sin(frame * 0.3) * 15, y - 30);
+            } else {
+                context.moveTo(x, y - 40);
+                context.lineTo(x - 15, y - 30);
+                context.moveTo(x, y - 40);
+                context.lineTo(x + 15, y - 30);
+            }
+            context.stroke();
+
+            // Legs animation (simple running motion)
+            context.beginPath();
+            if (player.grounded) {
+                context.moveTo(x, y - 20);
+                context.lineTo(x - 10 + Math.sin(frame * 0.3) * 10, y);
+                context.moveTo(x, y - 20);
+                context.lineTo(x + 10 - Math.sin(frame * 0.3) * 10, y);
+            } else {
+                context.moveTo(x, y - 20);
+                context.lineTo(x - 10, y);
+                context.moveTo(x, y - 20);
+                context.lineTo(x + 10, y);
+            }
+            context.stroke();
+        }
+
+        function draw() {
+            context.clearRect(0, 0, width, height);
+            // Draw player
+            drawStickman(player.x + player.width / 2, player.y + player.height, animationFrame);
+            // Draw obstacles
+            obstacles.forEach(obstacle => {
+                context.fillStyle = obstacle.color;
+                context.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+            });
+            // Draw game over text
+            if (gameOver) {
+                context.fillStyle = 'black';
+                context.font = '32px Arial';
+                context.textAlign = 'center';
+                context.fillText('Game Over', width / 2, height / 2);
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>

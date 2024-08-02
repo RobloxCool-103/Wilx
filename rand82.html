@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animate Drawing</title>
+    <style>
+        body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: Arial, sans-serif;
+}
+
+canvas {
+    border: 1px solid black;
+    margin-top: 20px;
+    cursor: crosshair;
+}
+
+button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+}
+
+    </style>
+</head>
+<body>
+    <h1>Draw and Animate</h1>
+    <canvas id="drawCanvas"></canvas>
+    <button id="animateButton">Animate Drawing</button>
+    <script>
+        const canvas = document.getElementById('drawCanvas');
+const ctx = canvas.getContext('2d');
+const animateButton = document.getElementById('animateButton');
+
+canvas.width = 800;
+canvas.height = 600;
+
+let isDrawing = false;
+let points = [];
+
+canvas.addEventListener('mousedown', (e) => {
+    isDrawing = true;
+    points.push({ x: e.offsetX, y: e.offsetY, vx: 0, vy: 0 });
+});
+
+canvas.addEventListener('mousemove', (e) => {
+    if (isDrawing) {
+        const x = e.offsetX;
+        const y = e.offsetY;
+        points.push({ x, y, vx: 0, vy: 0 });
+        drawLine(points[points.length - 2], points[points.length - 1]);
+    }
+});
+
+canvas.addEventListener('mouseup', () => {
+    isDrawing = false;
+    ctx.beginPath();
+});
+
+function drawLine(start, end) {
+    ctx.beginPath();
+    ctx.moveTo(start.x, start.y);
+    ctx.lineTo(end.x, end.y);
+    ctx.stroke();
+    ctx.closePath();
+}
+
+function animateDrawing() {
+    function update() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < points.length; i++) {
+            points[i].x += points[i].vx;
+            points[i].y += points[i].vy;
+
+            // Simple floating motion
+            points[i].vx += (Math.random() - 0.5) * 0.1;
+            points[i].vy += (Math.random() - 0.5) * 0.1;
+
+            // Boundary checks
+            if (points[i].x < 0 || points[i].x > canvas.width) points[i].vx *= -1;
+            if (points[i].y < 0 || points[i].y > canvas.height) points[i].vy *= -1;
+        }
+
+        for (let i = 1; i < points.length; i++) {
+            drawLine(points[i - 1], points[i]);
+        }
+
+        requestAnimationFrame(update);
+    }
+
+    update();
+}
+
+animateButton.addEventListener('click', animateDrawing);
+
+    </script>
+</body>
+</html>

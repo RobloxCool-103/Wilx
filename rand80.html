@@ -1,0 +1,71 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Random circle background Generator</title>
+  <style>
+    body {
+      background-color: #f5f5f5;
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+
+    #scribble {
+      width: 500px;
+      height: 500px;
+      border: 1px solid black;
+      margin: 50px auto;
+      position: relative;
+    }
+
+    #scribble::before,
+    #scribble::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background-color: #333;
+    }
+
+    #scribble::before {
+      width: 400px;
+      height: 400px;
+    }
+
+    #scribble::after {
+      width: 300px;
+      height: 300px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Random Scribble Generator</h1>
+  <div id="scribble"></div>
+  <button onclick="generateScribble()">Generate Scribble</button>
+
+  <script>
+    // function to generate a random color
+    function randomColor() {
+      return '#' + Math.floor(Math.random() * 16777215).toString(16);
+    }
+
+    // function to generate a random number within a range
+    function randomNumber(min, max) {
+      return Math.floor(Math.random() * (max - min) + min);
+    }
+
+    // function to generate a random scribble
+    function generateScribble() {
+      let scribble = document.getElementById('scribble');
+      scribble.style.backgroundColor = randomColor();
+      scribble.style.border = `${randomNumber(1, 10)}px solid ${randomColor()}`;
+      scribble.style.borderRadius = `${randomNumber(10, 50)}%`;
+    }
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Colorful Button Game</title>
+<style>
+  body {
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    text-align: center;
+    margin-top: 50px;
+    background-color: #f0f8ff; /* Light blue background */
+  }
+  #gameButton {
+    padding: 20px;
+    border: none;
+    border-radius: 50%;
+    background-color: #ff4500; /* Vivid orange-red */
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    transition: transform 0.1s; /* Smooth scaling transition */
+  }
+  #gameButton:hover {
+    transform: scale(1.1); /* Slightly enlarge button on hover */
+  }
+  #scoreDisplay, #highScoreDisplay {
+    font-size: 24px;
+    margin-top: 20px;
+    color: #32cd32; /* Lime green color for text */
+  }
+  #score, #highScore {
+    color: #ffd700; /* Gold color for scores */
+  }
+</style>
+</head>
+<body>
+<button id="gameButton">Press Me!</button>
+<div id="scoreDisplay">Score: <span id="score">1</span></div>
+<div id="highScoreDisplay">High Score: <span id="highScore">0</span></div>
+
+<script>
+  let score = 1;
+  let highScore = 0;
+  let timer = 30; // Timer in seconds
+  let difficulty = 'medium'; // Default difficulty level
+
+  // Function to update the timer display
+  function updateTimerDisplay() {
+    document.getElementById('timerDisplay').textContent = timer;
+  }
+
+  // Function to update the score display
+  function updateScoreDisplay() {
+    document.getElementById('score').textContent = score;
+  }
+
+  // Function to update the high score display
+  function updateHighScoreDisplay() {
+    document.getElementById('highScore').textContent = highScore;
+  }
+
+  // Function to decrease the timer by 1 second
+  function decrementTimer() {
+    timer--;
+    updateTimerDisplay();
+    if (timer === 0) {
+      clearInterval(timerInterval); // Stop the timer when it reaches 0
+      endGame();
+    }
+  }
+
+  // Function to end the game
+  function endGame() {
+    alert('Game Over! Your final score: ' + score);
+    resetGame();
+  }
+
+  // Function to reset the game
+  function resetGame() {
+    score = 1;
+    updateScoreDisplay();
+    timer = 30;
+    updateTimerDisplay();
+    changeButtonColor(); // Reset button color
+    clearInterval(timerInterval);
+    timerInterval = setInterval(decrementTimer, 1000); // Restart the timer
+  }
+
+  document.getElementById('gameButton').onclick = function() {
+    if (Math.random() < getProbability()) {
+      score++;
+      updateScoreDisplay();
+    } else {
+      if (score > highScore) {
+        highScore = score;
+        updateHighScoreDisplay();
+      }
+      score = 1;
+      updateScoreDisplay();
+    }
+  };
+
+  // Define an array of colors for the button
+  const colors = ['#ff4500', '#32cd32', '#ffd700', '#1e90ff', '#ff1493', '#ffff00', '#00ff00', '#ff00ff'];
+
+  // Function to change the button color
+  function changeButtonColor() {
+    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+    document.getElementById('gameButton').style.backgroundColor = randomColor;
+  }
+
+  // Function to get the probability of scoring points based on difficulty level
+  function getProbability() {
+    switch (difficulty) {
+      case 'easy':
+        return 0.8; // 80% chance of scoring points
+      case 'medium':
+        return 0.5; // 50% chance of scoring points
+      case 'hard':
+        return 0.2; // 20% chance of scoring points
+    }
+  }
+
+  // Change the button color every second
+  setInterval(changeButtonColor, 1000);
+
+  // Start the timer countdown
+  let timerInterval = setInterval(decrementTimer, 1000);
+
+  // Initial update of timer display
+  updateTimerDisplay();
+</script>
+</body>
+</html>

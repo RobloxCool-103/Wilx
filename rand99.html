@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced File Corrupter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 90%;
+            max-width: 600px;
+            margin: 10px;
+        }
+        h1 {
+            color: #333;
+        }
+        input[type="file"], select {
+            display: none;
+        }
+        label, .custom-select {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        label:hover, .custom-select:hover {
+            background-color: #0056b3;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        #downloadLink, #downloadTextLink, #recoverDownloadLink {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #ffc107;
+            color: #333;
+            border-radius: 4px;
+            text-decoration: none;
+        }
+        #downloadLink:hover, #downloadTextLink:hover, #recoverDownloadLink:hover {
+            background-color: #e0a800;
+        }
+        .custom-select {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>File Corrupter</h1>
+        <input type="file" id="fileInput">
+        <label for="fileInput">Choose File</label>
+        <select id="corruptionLevel" class="custom-select">
+            <option value="0.3">30% Corruption</option>
+            <option value="0.5">50% Corruption</option>
+            <option value="0.7">70% Corruption</option>
+            <option value="1.0">100% Corruption</option>
+        </select>
+        <button onclick="corruptFile()">Corrupt File</button>
+        <a id="downloadLink" style="display: none;">Download Corrupted File</a>
+        <a id="downloadTextLink" style="display: none;">Download Recovery Data</a>
+    </div>
+    <div class="container">
+        <h1>File Recovery</h1>
+        <input type="file" id="corruptedFileInput">
+        <label for="corruptedFileInput">Choose Corrupted File</label>
+        <input type="file" id="recoveryDataInput">
+        <label for="recoveryDataInput">Choose Recovery Data</label>
+        <button onclick="recoverFile()">Recover File</button>
+        <a id="recoverDownloadLink" style="display: none;">Download Recovered File</a>
+    </div>
+
+    <script>
+        let originalContent = null;
+
+        function corruptFile() {
+            const fileInput = document.getElementById('fileInput');
+            if (fileInput.files.length === 0) {
+                alert('Please select a file first.');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(event) {
+                let fileContent = new Uint8Array(event.target.result);
+                originalContent = fileContent.slice(); // Save original content for recovery
+
+                const corruptionLevel = parseFloat(document.getElementById('corruptionLevel').value);
+
+                // Corrupt the file by replacing a portion with random bytes
+                for (let i = 0; i < fileContent.length; i++) {
+                    if (Math.random() < corruptionLevel) {
+                        fileContent[i] = Math.floor(Math.random() * 256);
+                    }
+                }
+
+                const corruptedFile = new Blob([fileContent], { type: file.type });
+                const downloadLink = document.getElementById('downloadLink');
+                downloadLink.href = URL.createObjectURL(corruptedFile);
+                downloadLink.download = file.name;
+                downloadLink.style.display = 'block';
+
+                // Create and show the recovery data download link
+                const recoveryData = new Blob([originalContent], { type: 'application/octet-stream' });
+                const downloadTextLink = document.getElementById('downloadTextLink');
+                downloadTextLink.href = URL.createObjectURL(recoveryData);
+                downloadTextLink.download = 'recovery_data_' + file.name + '.txt';
+                downloadTextLink.style.display = 'block';
+            };
+
+            reader.readAsArrayBuffer(file);
+        }
+
+        function recoverFile() {
+            const corruptedFileInput = document.getElementById('corruptedFileInput');
+            const recoveryDataInput = document.getElementById('recoveryDataInput');
+
+            if (corruptedFileInput.files.length === 0) {
+                alert('Please select the corrupted file first.');
+                return;
+            }
+
+            if (recoveryDataInput.files.length === 0) {
+                alert('Please select the recovery data file first.');
+                return;
+            }
+
+            const corruptedFile = corruptedFileInput.files[0];
+            const recoveryDataFile = recoveryDataInput.files[0];
+
+            const corruptedFileReader = new FileReader();
+            const recoveryDataReader = new FileReader();
+
+            recoveryDataReader.onload = function(event) {
+                let originalContent = new Uint8Array(event.target.result);
+
+                const recoveredFile = new Blob([originalContent], { type: corruptedFile.type });
+                const recoverDownloadLink = document.getElementById('recoverDownloadLink');
+                recoverDownloadLink.href = URL.createObjectURL(recoveredFile);
+                recoverDownloadLink.download = 'Cool_' + corruptedFile.name;
+                recoverDownloadLink.style.display = 'block';
+            };
+
+            recoveryDataReader.readAsArrayBuffer(recoveryDataFile);
+        }
+    </script>
+</body>
+</html>

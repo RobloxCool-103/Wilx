@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas Drawing with Random Effects and Behaviors</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            flex-direction: column;
+            background-color: #f0f0f0;
+        }
+        canvas {
+            border: 2px solid black;
+        }
+        #toolbar {
+            margin-bottom: 10px;
+        }
+        #layers {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: white;
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="toolbar">
+        <button id="toggleModeButton">Switch to Line Mode</button>
+        <input type="color" id="colorPicker" title="Choose your color">
+        <input type="range" id="animationSpeed" min="1" max="10" value="5" title="Adjust animation speed">
+        <button id="undoButton">Undo</button>
+        <button id="redoButton">Redo</button>
+    </div>
+    <canvas id="drawingCanvas" width="800" height="600"></canvas>
+    <div id="layers">
+        <button id="addLayerButton">Add Layer</button>
+        <div id="layerList"></div>
+    </div>
+    <script>
+        const canvas = document.getElementById('drawingCanvas');
+        const ctx = canvas.getContext('2d');
+        const toggleModeButton = document.getElementById('toggleModeButton');
+        const colorPicker = document.getElementById('colorPicker');
+        const animationSpeedSlider = document.getElementById('animationSpeed');
+        const undoButton = document.getElementById('undoButton');
+        const redoButton = document.getElementById('redoButton');
+        const addLayerButton = document.getElementById('addLayerButton');
+        const layerList = document.getElementById('layerList');
+        let drawing = false;
+        let drawingMode = 'shapes'; // 'shapes' or 'lines'
+        let lastX = 0;
+        let lastY = 0;
+        let penColor = 'black';
+        let penSize = 5;
+        let penShape = 'round';
+        let animationSpeed = 5;
+        let shapes = [];
+        const gravity = 0.1;
+        const antiGravity = -0.1;
+        let layers = [{ shapes: [], ctx: ctx }];
+        let currentLayerIndex = 0;
+        let undoStack = [];
+        let redoStack = [];
+        let particles = [];
+
+        function getRandomColor() {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        function getRandomSize() {
+            return Math.floor(Math.random() * 20) + 5;
+        }
+
+        function getRandomShape() {
+            const shapes = ['round', 'square', 'triangle', 'rectangle'];
+            return shapes[Math.floor(Math.random() * shapes.length)];
+        }
+
+        function getRandomBehavior() {
+            const behaviors = ['gravity', 'antiGravity', 'horizontalMove', 'randomMove', 'stationary', 'sizeChange'];
+            return behaviors[Math.floor(Math.random() * behaviors.length)];
+        }
+
+        function applyRandomEffect() {
+            penColor = getRandomColor();
+            penSize = getRandomSize();
+            penShape = getRandomShape();
+        }
+
+        function startDrawing(e) {
+            drawing = true;
+            [lastX, lastY] = [e.offsetX, e.offsetY];
+            saveState();
+        }
+
+        function stopDrawing() {
+            drawing = false;
+            ctx.beginPath();
+        }
+
+        function draw(e) {
+            if (!drawing) return;
+            if (drawingMode === 'lines') {
+                ctx.lineWidth = penSize;
+                ctx.lineCap = 'round';
+                ctx.strokeStyle = penColor;
+
+                ctx.beginPath();
+                ctx.moveTo(lastX, lastY);
+                ctx.lineTo(e.offsetX, e.offsetY);
+                ctx.stroke();
+                [lastX, lastY] = [e.offsetX, e.offsetY];
+            } else if (drawingMode === 'shapes') {
+                ctx.lineWidth = penSize;
+                ctx.lineCap = penShape;
+                ctx.strokeStyle = penColor;
+
+                ctx.beginPath();
+                ctx.moveTo(lastX, lastY);
+                ctx.lineTo(e.offsetX, e.offsetY);
+                ctx.stroke();
+                [lastX, lastY] = [e.offsetX, e.offsetY];
+
+                // Add the drawn line as a shape with a random behavior
+                const shape = {
+                    x: lastX,
+                    y: lastY,
+                    size: penSize,
+                    color: penColor,
+                    shape: penShape,
+                    vy: 0, // Initial vertical speed
+                    vx: (Math.random() - 0.5) * 4, // Initial horizontal speed
+                    behavior: getRandomBehavior(),
+                    sizeChangeDirection: Math.random() > 0.5 ? 1 : -1, // Direction for size change
+                    changeColorInterval: Math.floor(Math.random() * 100) + 50 // Interval for color change
+                };
+                layers[currentLayerIndex].shapes.push(shape);
+                shapes.push(shape);
+                drawShape(shape);
+                showShapeMath(shape);
+            }
+        }
+
+        function drawShape(shape) {
+            ctx.fillStyle = shape.color;
+            ctx.beginPath();
+            if (shape.shape === 'round') {
+                ctx.arc(shape.x, shape.y, shape.size / 2, 0, Math.PI * 2);
+                ctx.fill();
+            } else if (shape.shape === 'square') {
+                ctx.fillRect(shape.x - shape.size / 2, shape.y - shape.size / 2, shape.size, shape.size);
+            } else if (shape.shape === 'triangle') {
+                ctx.moveTo(shape.x, shape.y - shape.size / 2);
+                ctx.lineTo(shape.x - shape.size / 2, shape.y + shape.size / 2);
+                ctx.lineTo(shape.x + shape.size / 2, shape.y + shape.size / 2);
+                ctx.closePath();
+                ctx.fill();
+            } else if (shape.shape === 'rectangle') {
+                ctx.fillRect(shape.x - shape.size / 2, shape.y - shape.size / 4, shape.size, shape.size / 2);
+            }
+        }
+
+        function updateShapes() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            layers.forEach(layer => {
+                layer.shapes.forEach((shape, index) => {
+                    // Apply behaviors
+                    if (shape.behavior === 'gravity') {
+                        shape.vy += gravity * animationSpeed / 5;
+                        shape.y += shape.vy;
+                    } else if (shape.behavior === 'antiGravity') {
+                        shape.vy += antiGravity * animationSpeed / 5;
+                        shape.y += shape.vy;
+                    } else if (shape.behavior === 'horizontalMove') {
+                        shape.x += shape.vx * animationSpeed / 5;
+                    } else if (shape.behavior === 'randomMove') {
+                        shape.x += (Math.random() - 0.5) * 4 * animationSpeed / 5;
+                        shape.y += (Math.random() - 0.5) * 4 * animationSpeed / 5;
+                    } else if (shape.behavior === 'sizeChange') {
+                        shape.size += shape.sizeChangeDirection * animationSpeed / 5;
+                        if (shape.size < 5 || shape.size > 50) {
+                            shape.sizeChangeDirection *= -1; // Reverse the size change direction
+                        }
+                    }
+
+                    // Random color change
+                    if (index % shape.changeColorInterval === 0) {
+                        shape.color = getRandomColor();
+                    }
+
+                    // Draw the shape
+                    drawShape(shape);
+
+                    // Check for collision with the canvas edges
+                    if (shape.x + shape.size / 2 >= canvas.width || shape.x - shape.size / 2 <= 0) {
+                        shape.vx *= -1; // Bounce horizontally
+                    }
+                    if (shape.y + shape.size / 2 >= canvas.height || shape.y - shape.size / 2 <= 0) {
+                        shape.vy *= -1; // Bounce vertically
+                    }
+
+                    // Remove shapes that are out of bounds for anti-gravity behavior
+                    if (shape.behavior === 'antiGravity' && shape.y + shape.size / 2 <= 0) {
+                        layer.shapes.splice(index, 1);
+                    }
+                });
+            });
+
+            updateParticles();
+        }
+
+        function updateParticles() {
+            particles.forEach((particle, index) => {
+                ctx.fillStyle = particle.color;
+                ctx.beginPath();
+                ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                ctx.fill();
+                particle.x += particle.vx;
+                particle.y += particle.vy;
+                particle.life -= 1;
+                if (particle.life <= 0) {
+                    particles.splice(index, 1);
+                }
+            });
+        }
+
+        function showShapeMath(shape) {
+            let area, perimeter;
+            if (shape.shape === 'round') {
+                area = Math.PI * Math.pow(shape.size / 2, 2);
+                perimeter = 2 * Math.PI * (shape.size / 2);
+            } else if (shape.shape === 'square' || shape.shape === 'rectangle') {
+                area = shape.shape === 'square' ? Math.pow(shape.size, 2) : shape.size * (shape.size / 2);
+                perimeter = shape.shape === 'square' ? 4 * shape.size : 2 * (shape.size + shape.size / 2);
+            } else if (shape.shape === 'triangle') {
+                area = (Math.sqrt(3) / 4) * Math.pow(shape.size, 2);
+                perimeter = 3 * shape.size;
+            }
+            ctx.fillStyle = 'black';
+            ctx.font = '12px Arial';
+            ctx.fillText(`Area: ${area.toFixed(2)}, Perimeter: ${perimeter.toFixed(2)}`, shape.x + 10, shape.y);
+        }
+
+        function saveState() {
+            undoStack.push(JSON.stringify(layers));
+            redoStack = []; // Clear redo stack
+        }
+
+        function undo() {
+            if (undoStack.length > 0) {
+                redoStack.push(JSON.stringify(layers));
+                layers = JSON.parse(undoStack.pop());
+                redraw();
+            }
+        }
+
+        function redo() {
+            if (redoStack.length > 0) {
+                undoStack.push(JSON.stringify(layers));
+                layers = JSON.parse(redoStack.pop());
+                redraw();
+            }
+        }
+
+        function redraw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            layers.forEach(layer => {
+                layer.shapes.forEach(shape => drawShape(shape));
+            });
+        }
+
+        function createParticles(x, y) {
+            for (let i = 0; i < 10; i++) {
+                particles.push({
+                    x: x,
+                    y: y,
+                    vx: (Math.random() - 0.5) * 4,
+                    vy: (Math.random() - 0.5) * 4,
+                    size: Math.random() * 5 + 2,
+                    color: getRandomColor(),
+                    life: Math.random() * 50 + 50
+                });
+            }
+        }
+
+        function switchLayer(index) {
+            currentLayerIndex = index;
+            redraw();
+        }
+
+        function addLayer() {
+            const newLayer = { shapes: [], ctx: ctx };
+            layers.push(newLayer);
+            const layerButton = document.createElement('button');
+            layerButton.textContent = `Layer ${layers.length}`;
+            layerButton.addEventListener('click', () => switchLayer(layers.length - 1));
+            layerList.appendChild(layerButton);
+        }
+
+        canvas.addEventListener('mousedown', (e) => {
+            startDrawing(e);
+            createParticles(e.offsetX, e.offsetY);
+        });
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseout', stopDrawing);
+        canvas.addEventListener('mousemove', draw);
+
+        toggleModeButton.addEventListener('click', () => {
+            if (drawingMode === 'shapes') {
+                drawingMode = 'lines';
+                toggleModeButton.textContent = 'Switch to Shapes Mode';
+            } else {
+                drawingMode = 'shapes';
+                toggleModeButton.textContent = 'Switch to Line Mode';
+            }
+        });
+
+        colorPicker.addEventListener('input', (e) => {
+            penColor = e.target.value;
+        });
+
+        animationSpeedSlider.addEventListener('input', (e) => {
+            animationSpeed = e.target.value;
+        });
+
+        undoButton.addEventListener('click', undo);
+        redoButton.addEventListener('click', redo);
+
+        addLayerButton.addEventListener('click', addLayer);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'z') {
+                undo();
+            } else if (e.ctrlKey && e.key === 'y') {
+                redo();
+            } else if (e.key === 'm') {
+                if (drawingMode === 'shapes') {
+                    drawingMode = 'lines';
+                    toggleModeButton.textContent = 'Switch to Shapes Mode';
+                } else {
+                    drawingMode = 'shapes';
+                    toggleModeButton.textContent = 'Switch to Line Mode';
+                }
+            }
+        });
+
+        setInterval(applyRandomEffect, 1000); // Change pen effect every second
+
+        animate();
+
+        function animate() {
+            updateShapes();
+            requestAnimationFrame(animate);
+        }
+    </script>
+</body>
+</html>

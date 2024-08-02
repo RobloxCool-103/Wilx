@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Draw and Animate</title>
+    <style>
+        body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f0f0f0;
+}
+
+.container {
+    text-align: center;
+}
+
+canvas {
+    border: 1px solid #000;
+    cursor: crosshair;
+}
+
+button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+}
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <canvas id="drawingCanvas"></canvas>
+        <button id="animateButton">Animate Drawing</button>
+    </div>
+    <script>
+        const canvas = document.getElementById('drawingCanvas');
+const ctx = canvas.getContext('2d');
+const animateButton = document.getElementById('animateButton');
+let isDrawing = false;
+let paths = [];
+
+canvas.width = 800;
+canvas.height = 600;
+
+canvas.addEventListener('mousedown', startDrawing);
+canvas.addEventListener('mouseup', endDrawing);
+canvas.addEventListener('mousemove', draw);
+
+animateButton.addEventListener('click', animateDrawing);
+
+function startDrawing(e) {
+    isDrawing = true;
+    paths.push([]);
+    draw(e);
+}
+
+function endDrawing() {
+    isDrawing = false;
+    ctx.beginPath();
+}
+
+function draw(e) {
+    if (!isDrawing) return;
+    
+    const x = e.clientX - canvas.offsetLeft;
+    const y = e.clientY - canvas.offsetTop;
+    
+    paths[paths.length - 1].push({ x, y });
+    
+    ctx.lineWidth = 5;
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = '#000';
+    
+    ctx.lineTo(x, y);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+}
+
+function animateDrawing() {
+    if (paths.length === 0) return;
+    
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let pathIndex = 0;
+    let pointIndex = 0;
+
+    function animate() {
+        if (pathIndex >= paths.length) return;
+
+        if (pointIndex < paths[pathIndex].length - 1) {
+            const start = paths[pathIndex][pointIndex];
+            const end = paths[pathIndex][pointIndex + 1];
+            ctx.lineWidth = 5;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = getRandomColor();
+
+            ctx.beginPath();
+            ctx.moveTo(start.x, start.y);
+            ctx.lineTo(end.x, end.y);
+            ctx.stroke();
+
+            pointIndex++;
+            requestAnimationFrame(animate);
+        } else {
+            pathIndex++;
+            pointIndex = 0;
+            requestAnimationFrame(animate);
+        }
+    }
+
+    animate();
+}
+
+function getRandomColor() {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
+
+    </script>
+</body>
+</html>

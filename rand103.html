@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staggering Beauty</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #000;
+        }
+        #worm {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 200px;
+            background-color: #00FF00;
+            border-radius: 10px;
+            transition: transform 0.1s ease, background-color 0.1s ease;
+        }
+        @keyframes shake {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            25% { transform: translate(-50%, -50%) rotate(10deg); }
+            50% { transform: translate(-50%, -50%) rotate(0deg); }
+            75% { transform: translate(-50%, -50%) rotate(-10deg); }
+            100% { transform: translate(-50%, -50%) rotate(0deg); }
+        }
+        .shake {
+            animation: shake 0.1s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div id="worm"></div>
+
+    <script>
+        const worm = document.getElementById('worm');
+        let isShaking = false;
+
+        document.addEventListener('mousemove', (e) => {
+            const x = e.clientX;
+            const y = e.clientY;
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+            const angle = Math.atan2(y - centerY, x - centerX) * 180 / Math.PI;
+            worm.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
+            worm.style.backgroundColor = `rgb(${Math.random()*255}, ${Math.random()*255}, ${Math.random()*255})`;
+            
+            if (Math.abs(x - centerX) > 100 || Math.abs(y - centerY) > 100) {
+                if (!isShaking) {
+                    worm.classList.add('shake');
+                    isShaking = true;
+                }
+            } else {
+                if (isShaking) {
+                    worm.classList.remove('shake');
+                    isShaking = false;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

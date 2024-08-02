@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infinite Equation Solver</title>
+</head>
+<body>
+    <h1>Infinite Equation Solver</h1>
+    <button onclick="generateEquation()">Generate Equation</button>
+    <p id="equation"></p>
+    <button onclick="solveEquation()">Solve Equation</button>
+    <p id="solution"></p>
+
+    <script>
+        // JavaScript logic for the Infinite Equation Solver
+        // Define functions for generating equations and solving them
+        function generateEquation() {
+            // Generate a random equation
+            const coefficients = generateRandomCoefficients();
+            const operator = ['+', '-', '*', '/'][Math.floor(Math.random() * 4)];
+            const equation = `${coefficients.a} ${operator} ${coefficients.b} = ${coefficients.c}`;
+            document.getElementById('equation').innerText = equation;
+        }
+
+        function solveEquation() {
+            // Solve the generated equation
+            const solution = calculateSolution();
+            document.getElementById('solution').innerText = `Solution: x = ${solution}`;
+        }
+
+        // Function to generate random coefficients for the equation
+        function generateRandomCoefficients() {
+            const min = -10; // Minimum coefficient value
+            const max = 10; // Maximum coefficient value
+            return {
+                a: Math.floor(Math.random() * (max - min + 1)) + min,
+                b: Math.floor(Math.random() * (max - min + 1)) + min,
+                c: Math.floor(Math.random() * (max - min + 1)) + min
+            };
+        }
+
+        // Function to calculate the solution of the generated equation
+        function calculateSolution() {
+            // Solve the equation to find the value of x
+            // Example solution: x = (c - b) / a
+            const coefficients = getEquationCoefficients();
+            let solution;
+            switch (coefficients.operator) {
+                case '+':
+                    solution = coefficients.c - coefficients.b;
+                    break;
+                case '-':
+                    solution = coefficients.c + coefficients.b;
+                    break;
+                case '*':
+                    solution = coefficients.c / coefficients.b;
+                    break;
+                case '/':
+                    solution = coefficients.c * coefficients.b;
+                    break;
+                default:
+                    solution = "Undefined";
+            }
+            return solution;
+        }
+
+        // Function to extract coefficients and operator from the generated equation
+        function getEquationCoefficients() {
+            const equationText = document.getElementById('equation').innerText;
+            const matches = equationText.match(/-?\d+/g); // Regular expression to match integers
+            return {
+                a: parseInt(matches[0]),
+                b: parseInt(matches[1]),
+                c: parseInt(matches[2]),
+                operator: equationText.split(' ')[1]
+            };
+        }
+    </script>
+</body>
+</html>

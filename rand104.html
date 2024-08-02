@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>This is Sand</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #222;
+        }
+        #canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const sandParticles = [];
+        const floor = Array(canvas.width).fill(canvas.height);
+
+        class SandParticle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 2 + 1;
+                this.speedY = Math.random() * 2 + 1;
+                this.color = color;
+            }
+
+            update() {
+                this.y += this.speedY;
+                if (this.y > floor[Math.floor(this.x)]) {
+                    this.y = floor[Math.floor(this.x)] - this.size;
+                    floor[Math.floor(this.x)] -= this.size;
+                    this.speedY = 0;
+                }
+            }
+
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function createSand(x, y) {
+            for (let i = 0; i < 50; i++) {
+                sandParticles.push(new SandParticle(
+                    x + (Math.random() - 0.5) * 10,
+                    y + (Math.random() - 0.5) * 10,
+                    `hsl(${Math.random() * 360}, 100%, 50%)`
+                ));
+            }
+        }
+
+        function updateSand() {
+            for (let i = 0; i < sandParticles.length; i++) {
+                let p = sandParticles[i];
+                p.update();
+                if (p.speedY === 0) {
+                    sandParticles.splice(i, 1);
+                    i--;
+                }
+            }
+        }
+
+        function drawSand() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let p of sandParticles) {
+                p.draw();
+            }
+        }
+
+        function animate() {
+            updateSand();
+            drawSand();
+            requestAnimationFrame(animate);
+        }
+
+        canvas.addEventListener('mousemove', (e) => {
+            createSand(e.clientX, e.clientY);
+        });
+
+        animate();
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            floor.fill(canvas.height);
+        });
+    </script>
+</body>
+</html>

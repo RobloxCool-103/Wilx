@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Random Selection</title>
+<script>
+function chooseLuckyPerson() {
+  var names = document.getElementById('names').value.split(',');
+  var luckyPerson = names[Math.floor(Math.random() * names.length)];
+  alert("The lucky person is: " + luckyPerson.trim());
+}
+</script>
+</head>
+<body>
+
+<h2>God's Selection</h2>
+<p>Enter your friends' names, separated by commas:</p>
+<textarea id="names" rows="4" cols="50"></textarea><br><br>
+<button onclick="chooseLuckyPerson()">Choose the Lucky Person</button>
+
+</body>
+</html>

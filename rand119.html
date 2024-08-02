@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Falling Blocks</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #f0f0f0;
+            margin: 0;
+        }
+        #game-canvas {
+            background: #333;
+            border: 2px solid #000;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="game-canvas" width="600" height="400"></canvas>
+
+    <script>
+        const canvas = document.getElementById('game-canvas');
+        const ctx = canvas.getContext('2d');
+        const player = { x: canvas.width / 2 - 50, y: canvas.height - 30, width: 100, height: 10 };
+        let blocks = [];
+        let score = 0;
+
+        function drawPlayer() {
+            ctx.fillStyle = '#00f';
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+        }
+
+        function drawBlocks() {
+            ctx.fillStyle = '#f00';
+            blocks.forEach(block => {
+                ctx.fillRect(block.x, block.y, block.width, block.height);
+            });
+        }
+
+        function updateBlocks() {
+            if (Math.random() < 0.02) {
+                blocks.push({ x: Math.random() * (canvas.width - 50), y: 0, width: 50, height: 20 });
+            }
+            blocks.forEach(block => block.y += 5);
+            blocks = blocks.filter(block => block.y < canvas.height);
+        }
+
+        function checkCollision() {
+            blocks.forEach(block => {
+                if (block.y + block.height > player.y &&
+                    block.x < player.x + player.width &&
+                    block.x + block.width > player.x) {
+                    blocks = blocks.filter(b => b !== block);
+                    score++;
+                }
+            });
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawPlayer();
+            drawBlocks();
+            updateBlocks();
+            checkCollision();
+
+            ctx.fillStyle = 'white';
+            ctx.font = '20px Arial';
+            ctx.fillText('Score: ' + score, 10, 20);
+
+            requestAnimationFrame(draw);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft' && player.x > 0) player.x -= 20;
+            if (e.key === 'ArrowRight' && player.x < canvas.width - player.width) player.x += 20;
+        });
+
+        draw();
+    </script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sudoku</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background: #f0f0f0;
+      font-family: Arial, sans-serif;
+    }
+    
+    #sudokuContainer {
+      display: grid;
+      grid-template-columns: repeat(9, 40px);
+      grid-template-rows: repeat(9, 40px);
+      gap: 2px;
+    }
+
+    .cell {
+      width: 40px;
+      height: 40px;
+      background: #fff;
+      border: 1px solid #ddd;
+      text-align: center;
+      font-size: 18px;
+    }
+
+    .cell input {
+      width: 100%;
+      height: 100%;
+      border: none;
+      text-align: center;
+      font-size: 18px;
+    }
+
+    .cell.fixed {
+      background: #eee;
+      font-weight: bold;
+    }
+
+    #message {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <div id="sudokuContainer"></div>
+  <div id="message"></div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const sudokuContainer = document.getElementById('sudokuContainer');
+      const message = document.getElementById('message');
+      
+      const initialBoard = [
+        [5, 3, null, null, 7, null, null, null, null],
+        [6, null, null, 1, 9, 5, null, null, null],
+        [null, 9, 8, null, null, null, null, 6, null],
+        [8, null, null, null, 6, null, null, null, 3],
+        [4, null, null, 8, null, 3, null, null, 1],
+        [7, null, null, null, 2, null, null, null, 6],
+        [null, 6, null, null, null, null, 2, 8, null],
+        [null, null, null, 4, 1, 9, null, null, 5],
+        [null, null, null, null, 8, null, null, 7, 9]
+      ];
+
+      function createBoard(board) {
+        sudokuContainer.innerHTML = '';
+        for (let row = 0; row < 9; row++) {
+          for (let col = 0; col < 9; col++) {
+            const cell = document.createElement('div');
+            cell.classList.add('cell');
+            if (board[row][col] !== null) {
+              cell.classList.add('fixed');
+              cell.textContent = board[row][col];
+            } else {
+              const input = document.createElement('input');
+              input.type = 'text';
+              input.maxLength = 1;
+              input.addEventListener('input', () => validateInput(row, col, input));
+              cell.appendChild(input);
+            }
+            sudokuContainer.appendChild(cell);
+          }
+        }
+      }
+
+      function validateInput(row, col, input) {
+        const value = parseInt(input.value);
+        if (isNaN(value) || value < 1 || value > 9 || !isValidMove(row, col, value)) {
+          input.value = '';
+          message.textContent = 'Invalid move!';
+        } else {
+          message.textContent = '';
+        }
+      }
+
+      function isValidMove(row, col, value) {
+        for (let i = 0; i < 9; i++) {
+          if (initialBoard[row][i] === value || initialBoard[i][col] === value) {
+            return false;
+          }
+        }
+
+        const startRow = Math.floor(row / 3) * 3;
+        const startCol = Math.floor(col / 3) * 3;
+        for (let i = 0; i < 3; i++) {
+          for (let j = 0; j < 3; j++) {
+            if (initialBoard[startRow + i][startCol + j] === value) {
+              return false;
+            }
+          }
+        }
+
+        return true;
+      }
+
+      createBoard(initialBoard);
+    });
+  </script>
+</body>
+</html>

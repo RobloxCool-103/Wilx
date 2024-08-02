@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pattern Finder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .input-group {
+            margin-bottom: 10px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        .input-group button {
+            width: 100%;
+            padding: 10px;
+            background: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .input-group button:hover {
+            background: #0056b3;
+        }
+        .results {
+            margin-top: 20px;
+        }
+        .result {
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Pattern Finder</h1>
+        <div class="input-group">
+            <label for="numberPairs">Enter number pairs (comma separated, e.g., 3->12,7->16):</label>
+            <input type="text" id="numberPairs" placeholder="e.g., 3-12, 7-16">
+        </div>
+        <div class="input-group">
+            <label for="numberToFind">Enter a number to find its pattern:</label>
+            <input type="text" id="numberToFind" placeholder="e.g., 9">
+        </div>
+        <div class="input-group">
+            <button onclick="findPattern()">Find Pattern</button>
+        </div>
+        <div class="results" id="results"></div>
+    </div>
+
+    <script>
+        function findPattern() {
+            const numberPairsInput = document.getElementById('numberPairs').value;
+            const numberToFindInput = document.getElementById('numberToFind').value;
+            const resultsDiv = document.getElementById('results');
+
+            resultsDiv.innerHTML = '';
+
+            if (!numberPairsInput || !numberToFindInput) {
+                alert('Please enter both number pairs and a number to find.');
+                return;
+            }
+
+            const numberPairs = numberPairsInput.split(',').map(pair => {
+                const [a, b] = pair.split('-').map(Number);
+                return { a, b };
+            });
+
+            const numberToFind = Number(numberToFindInput);
+
+            if (isNaN(numberToFind)) {
+                alert('Please enter a valid number to find.');
+                return;
+            }
+
+            // Check for patterns
+            const patterns = numberPairs.map(pair => ({
+                diff: pair.b - pair.a,
+                ratio: pair.b / pair.a
+            }));
+
+            const diffPattern = patterns.every(p => p.diff === patterns[0].diff);
+            const ratioPattern = patterns.every(p => p.ratio === patterns[0].ratio);
+
+            let result;
+            if (diffPattern) {
+                result = numberToFind + patterns[0].diff;
+            } else if (ratioPattern) {
+                result = numberToFind * patterns[0].ratio;
+            } else {
+                result = 'No consistent pattern found';
+            }
+
+            const resultDiv = document.createElement('div');
+            resultDiv.className = 'result';
+            resultDiv.textContent = `Result: ${result}`;
+            resultsDiv.appendChild(resultDiv);
+        }
+    </script>
+</body>
+</html>

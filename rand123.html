@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Randomly Generated Interactive Map</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+    #mapCanvas {
+      border: 1px solid #000;
+      background-color: #f0f0f0;
+    }
+    #info {
+      margin-top: 20px;
+      font-size: 1.2em;
+    }
+  </style>
+</head>
+<body>
+  <h1>Interactive Map</h1>
+  <canvas id="mapCanvas" width="600" height="600"></canvas>
+  <div id="info">
+    <h2>Region Information</h2>
+    <p id="region-info">Click on a region to see the details.</p>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('mapCanvas');
+    const ctx = canvas.getContext('2d');
+    const regions = [];
+    const regionInfo = document.getElementById('region-info');
+
+    // Generate random regions
+    function generateRegions() {
+      for (let i = 0; i < 5; i++) {
+        const x = Math.random() * (canvas.width - 100);
+        const y = Math.random() * (canvas.height - 100);
+        const width = 100 + Math.random() * 100;
+        const height = 100 + Math.random() * 100;
+        const color = getRandomColor();
+
+        regions.push({ x, y, width, height, color, id: `region${i + 1}` });
+      }
+    }
+
+    // Draw regions
+    function drawRegions() {
+      regions.forEach(region => {
+        ctx.fillStyle = region.color;
+        ctx.fillRect(region.x, region.y, region.width, region.height);
+      });
+    }
+
+    // Get random color
+    function getRandomColor() {
+      const letters = '0123456789ABCDEF';
+      let color = '#';
+      for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    }
+
+    // Handle click events
+    canvas.addEventListener('click', (event) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+
+      regions.forEach(region => {
+        if (
+          x > region.x &&
+          x < region.x + region.width &&
+          y > region.y &&
+          y < region.y + region.height
+        ) {
+          regionInfo.textContent = `You clicked on ${region.id} with color ${region.color}`;
+        }
+      });
+    });
+
+    // Initialize map
+    generateRegions();
+    drawRegions();
+  </script>
+</body>
+</html>

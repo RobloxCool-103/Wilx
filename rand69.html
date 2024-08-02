@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Rhythm Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        #gameArea {
+            margin-top: 50px;
+        }
+        .note {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            background-color: #000;
+            margin: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Music Rhythm Game</h1>
+    <div id="gameArea">
+        <!-- Note elements will be dynamically added here -->
+    </div>
+    <audio id="backgroundMusic" src="background_music.mp3" loop></audio>
+    <button onclick="startGame()">Start Game</button>
+
+    <script>
+        const notes = ['red', 'green', 'blue', 'yellow']; // Different colored notes
+        let gameInterval; // Interval for generating notes
+        let score = 0;
+
+        function startGame() {
+            score = 0;
+            document.getElementById('gameArea').innerHTML = ''; // Clear previous notes
+            clearInterval(gameInterval); // Clear previous game interval if any
+            playBackgroundMusic();
+            gameInterval = setInterval(generateNote, 1000); // Generate notes every second
+        }
+
+        function generateNote() {
+            const randomIndex = Math.floor(Math.random() * notes.length);
+            const randomNote = notes[randomIndex];
+            const noteElement = document.createElement('div');
+            noteElement.classList.add('note', randomNote);
+            noteElement.addEventListener('click', () => {
+                removeNote(noteElement);
+                increaseScore();
+            });
+            document.getElementById('gameArea').appendChild(noteElement);
+            setTimeout(() => removeNote(noteElement), 3000); // Remove note after 3 seconds
+        }
+
+        function removeNote(noteElement) {
+            noteElement.remove();
+        }
+
+        function increaseScore() {
+            score++;
+            console.log('Score: ' + score); // Update score display
+        }
+
+        function playBackgroundMusic() {
+            const backgroundMusic = document.getElementById('backgroundMusic');
+            backgroundMusic.currentTime = 0; // Restart music
+            backgroundMusic.play();
+        }
+    </script>
+</body>
+</html>

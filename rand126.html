@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maze Solver</title>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        canvas { display: block; background: #fff; }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const cellSize = 40;
+        const mazeWidth = Math.floor(canvas.width / cellSize);
+        const mazeHeight = Math.floor(canvas.height / cellSize);
+        const maze = [];
+        const player = { x: 1, y: 1 };
+
+        function generateMaze() {
+            for (let y = 0; y < mazeHeight; y++) {
+                maze[y] = [];
+                for (let x = 0; x < mazeWidth; x++) {
+                    maze[y][x] = Math.random() < 0.3 ? '1' : '0';
+                }
+            }
+            maze[0][1] = '0'; // Start
+            maze[mazeHeight - 2][mazeWidth - 2] = '0'; // Finish
+        }
+
+        function drawMaze() {
+            for (let y = 0; y < mazeHeight; y++) {
+                for (let x = 0; x < mazeWidth; x++) {
+                    ctx.fillStyle = maze[y][x] === '1' ? 'black' : 'white';
+                    ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+                }
+            }
+        }
+
+        function drawPlayer() {
+            ctx.fillStyle = 'red';
+            ctx.fillRect(player.x * cellSize, player.y * cellSize, cellSize, cellSize);
+        }
+
+        function drawFinish() {
+            ctx.fillStyle = 'blue';
+            ctx.fillRect((mazeWidth - 2) * cellSize, (mazeHeight - 2) * cellSize, cellSize, cellSize);
+        }
+
+        function checkWin() {
+            const finishX = (mazeWidth - 2) * cellSize;
+            const finishY = (mazeHeight - 2) * cellSize;
+            return player.x * cellSize === finishX && player.y * cellSize === finishY;
+        }
+
+        function update() {
+            if (keys['ArrowUp'] && maze[player.y - 1][player.x] === '0') player.y--;
+            if (keys['ArrowDown'] && maze[player.y + 1][player.x] === '0') player.y++;
+            if (keys['ArrowLeft'] && maze[player.y][player.x - 1] === '0') player.x--;
+            if (keys['ArrowRight'] && maze[player.y][player.x + 1] === '0') player.x++;
+        }
+
+        const keys = {};
+        window.addEventListener('keydown', (e) => keys[e.key] = true);
+        window.addEventListener('keyup', (e) => keys[e.key] = false);
+
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            update();
+            drawMaze();
+            drawPlayer();
+            drawFinish();
+            if (checkWin()) {
+                ctx.fillStyle = 'green';
+                ctx.font = '30px Arial';
+                ctx.fillText('You Win!', canvas.width / 2 - 70, canvas.height / 2);
+            }
+            requestAnimationFrame(gameLoop);
+        }
+
+        generateMaze();
+        gameLoop();
+    </script>
+</body>
+</html>

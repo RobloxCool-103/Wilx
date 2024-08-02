@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pong Ping Game with AI</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #f0f0f0;
+        }
+        canvas {
+            display: block;
+            margin: 0 auto;
+            background-color: #000;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="800" height="400"></canvas>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+
+        const paddleWidth = 10;
+        const paddleHeight = 80;
+        const paddleSpeed = 5;
+        const ballSize = 10;
+        let playerY = canvas.height / 2 - paddleHeight / 2;
+        let aiY = canvas.height / 2 - paddleHeight / 2;
+        let ballX = canvas.width / 2;
+        let ballY = canvas.height / 2;
+        let ballSpeedX = 10;
+        let ballSpeedY = 52;
+        let playerScore = 0;
+        let aiScore = 0;
+
+        function draw() {
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw paddles
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(10, playerY, paddleWidth, paddleHeight);
+            ctx.fillRect(canvas.width - paddleWidth - 10, aiY, paddleWidth, paddleHeight);
+
+            // Draw ball
+            ctx.beginPath();
+            ctx.arc(ballX, ballY, ballSize, 0, Math.PI * 2);
+            ctx.fillStyle = "#ffffff";
+            ctx.fill();
+            ctx.closePath();
+
+            // Draw scores
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "24px Arial";
+            ctx.fillText("Player: " + playerScore, 50, 30);
+            ctx.fillText("AI: " + aiScore, canvas.width - 100, 30);
+
+            // Move ball
+            ballX += ballSpeedX;
+            ballY += ballSpeedY;
+
+            // AI movement
+            if (ballY > aiY + paddleHeight / 2) {
+                aiY += paddleSpeed;
+            } else {
+                aiY -= paddleSpeed;
+            }
+
+            // Check collision with walls
+            if (ballY + ballSize >= canvas.height || ballY - ballSize <= 0) {
+                ballSpeedY *= -1;
+            }
+
+            // Check collision with paddles
+            if ((ballX - ballSize <= paddleWidth + 10 && ballY >= playerY && ballY <= playerY + paddleHeight) ||
+                (ballX + ballSize >= canvas.width - paddleWidth - 10 && ballY >= aiY && ballY <= aiY + paddleHeight)) {
+                ballSpeedX *= -1;
+            }
+
+            // Check if ball goes past paddles
+            if (ballX + ballSize >= canvas.width) {
+                playerScore++;
+                resetBall();
+            } else if (ballX - ballSize <= 0) {
+                aiScore++;
+                resetBall();
+            }
+
+            requestAnimationFrame(draw);
+        }
+
+        function resetBall() {
+            ballX = canvas.width / 2;
+            ballY = canvas.height / 2;
+            ballSpeedX = Math.random() > 0.5 ? 5 : -5; // Randomize ball direction
+            ballSpeedY = Math.random() > 0.5 ? 5 : -5; // Randomize ball direction
+        }
+
+        canvas.addEventListener("mousemove", function(event) {
+            let mouseY = event.clientY - canvas.getBoundingClientRect().top - paddleHeight / 2;
+            if (mouseY >= 0 && mouseY <= canvas.height - paddleHeight) {
+                playerY = mouseY;
+            }
+        });
+
+        draw(); // Start the game loop
+    </script>
+</body>
+</html>

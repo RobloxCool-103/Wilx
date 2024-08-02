@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Website(s)</title>
+    <style>
+        /* Reset CSS */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-image: url('OIG1 (2).jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            transition: background-image 1s ease-in-out;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        ul {
+            background-color: #eee;
+            padding: 10px;
+            text-align: center;
+        }
+
+        ul a {
+            display: inline-block;
+            padding: 5px 10px;
+            margin: 5px;
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease-in-out;
+            position: relative;
+        }
+
+        ul a:hover {
+            background-color: #333;
+            color: white;
+        }
+
+        ul a span {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: white;
+            padding: 5px;
+            border-radius: 5px;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        ul a:hover span {
+            opacity: 1;
+        }
+
+        section {
+            padding: 20px;
+            text-align: center;
+        }
+
+        section h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+        section p {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        section img {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        footer {
+            background-color: #1707fb;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        @media (min-width: 768px) {
+            body {
+                font-size: 20px;
+            }
+
+            header {
+                padding: 40px;
+            }
+
+            ul {
+                padding: 20px;
+                color: #21f80e;
+                background-color: red;
+            }
+
+            ul a {
+                padding: 10px 20px;
+            }
+
+            section {
+                padding: 40px;
+            }
+
+            section h2 {
+                font-size: 48px;
+            }
+
+            section p {
+                font-size: 24px;
+            }
+
+            footer {
+                padding: 40px;
+            }
+        }
+
+        /* Button styles */
+        button {
+            padding: 5px 10px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            background-color: #f2f2f2;
+            color: #333;
+            font-weight: bold;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        span {
+            width: 50px;
+            height: 50px;
+        }
+
+        button:hover {
+            background-color: #21f80e;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        button:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .background-fade {
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
+        nav {
+            background-color: #eee;
+            padding: 10px;
+            text-align: center;
+        }
+
+        nav a {
+            display: inline-block;
+            padding: 5px 10px;
+            margin: 5px;
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease-in-out;
+            position: relative;
+        }
+
+        nav a:hover {
+            background-color: #333;
+            color: white;
+        }
+
+        nav a span {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: white;
+            padding: 5px;
+            border-radius: 5px;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        nav a:hover span {
+            opacity: 1;
+        }
+
+        nav {
+            padding: 20px;
+            color: #21f80e;
+            background-color: red;
+        }
+
+        nav a {
+            padding: 10px 20px;
+        }
+
+        img {
+            width: 50px;
+            height: 50px;
+        }
+        
+    </style>
+</head>
+<body>
+    <header>
+        <centre><img src="Logo.jpg"></centre>
+        <h1>My Website(s)</h1>
+    </header>
+
+    <nav>
+        <button><a href="#">Home<span>Visit the homepage</span></a></button>
+        <button><a href="#">About<span>Learn about us</span></a></button>
+        <button><a href="#">Contact<span>Contact us</span></a></button>
+    </nav>
+
+    <section>
+        <h2>Welcome!</h2>
+        <h3>Welcome to a professional website designer's website!</h3>
+        <h4>Games I Am Introducing:</h4>
+        <button id="randomButton" onclick="goToRandomWebsite()"><span>Take me to a random website</span></button>
+        </section>
+        <centre><button onclick="forusall">for devs</button></centre>
+    </section>
+
+    <footer>
+        <p>© 2024 My Website(s). All rights reserved.</p>
+    </footer>
+
+    <script>
+        function forusall() {
+            console.log("Credits go to AI...For all the websites");
+            return;
+    }
+        // Function to change the background image with a smooth transition
+        function changeBackground() {
+            var images = [
+                'url("1.jpg")',
+                'url("2.jpg")',
+                'url("3.jpg")',
+                'url("4.jpg")',
+                'url("5.jpg")',
+                'url("6.jpg")',
+                'url("7.jpg")',
+                'url("8.jpg")',
+                'url("9.jpg")',
+                'url("10.jpg")',
+                'url("11.jpg")',
+                'url("12.jpg")',
+                'url("13.jpg")',
+                'url("14.jpg")',
+                'url("15.jpg")',
+                'url("16.jpg")',
+                'url("17.jpg")',
+                'url("18.jpg")'
+            ];
+
+            var index = Math.floor(Math.random() * images.length);
+
+            var newBackground = document.createElement('div');
+            newBackground.style.backgroundImage = images[index];
+            newBackground.style.position = 'fixed';
+            newBackground.style.left = '0';
+            newBackground.style.right = '0';
+            newBackground.style.top = '0';
+            newBackground.style.bottom = '0';
+            newBackground.style.zIndex = '-1';
+            newBackground.style.transition = 'opacity 1s ease-in-out';
+            newBackground.style.opacity = '0';
+            document.body.appendChild(newBackground);
+
+            var oldBackground = document.querySelector('.background-fade');
+            if (oldBackground) {
+                oldBackground.style.opacity = '0';
+                setTimeout(function() {
+                    oldBackground.parentNode.removeChild(oldBackground);
+                }, 1000);
+            }
+
+            newBackground.className = 'background-fade';
+            setTimeout(function() {
+                newBackground.style.opacity = '1';
+            }, 10);
+        }
+
+        setInterval(changeBackground, 4000);
+
+        function goToRandomWebsite() {
+            const websites = [
+                "rand29.html",
+                "rand30.html",
+                "rand31.html",
+                "rand48.html",
+                "rand33.html",
+                "rand49.html",
+                "rand35.html",
+                "rand36.html",
+                "rand37.html",
+                "rand38.html",
+                "rand39.html",
+                "rand40.html",
+                "rand41.html",
+                "rand42.html",
+                "rand43.html",
+                "rand44.html",
+                "rand45.html",
+                "rand46.html",
+                "rand47.html",
+                "rand50.html",
+                "rand51.html",
+                "rand52.html",
+                "rand53.html",
+                "rand54.html",
+                "rand55.html",
+                "rand56.html",
+                "rand57.html",
+                "rand58.html",
+                "rand59.html",
+                "rand60.html",
+                "rand61.html",
+                "rand62.html",
+                "rand64.html",
+                "rand65.html",
+                "rand66.html",
+                "rand67.html",
+                "rand69.html",
+                "rand70.html",
+                "rand71.html",
+                "rand72.html",
+                "rand73.html",
+                "rand74.html",
+                "rand75.html",
+                "rand76.html",
+                "rand77.html",
+                "rand78.html",
+                "rand79.html",
+                "rand80.html",
+                "rand81.html",
+                "rand82.html",
+                "rand83.html",
+                "rand84.html",
+                "rand86.html",
+                "rand87.html",
+                "rand88.html",
+                "rand89.html",
+                "rand90.html",
+                "rand91.html",
+                "rand92.html",
+                "rand93.html",
+                "rand94.html",
+                "rand95.html",
+                "rand96.html",
+                "rand97.html",
+                "rand98.html",
+                "rand99.html",
+                "rand100.html",
+                "rand101.html",    
+                "rand102.html",
+                "rand103.html",
+                "rand104.html",
+                "rand105.html",
+                "rand106.html",
+                "rand107.html",
+                "rand108.html",
+                "rand109.html",
+                "rand110.html",
+                "rand111.html",
+                "rand112.html",
+                "rand113.html",
+                "rand114.html",
+                "rand115.html",
+                "rand116.html",
+                "rand117.html",
+                "rand118.html",
+                "rand119.html",
+                "rand120.html",
+                "rand121.html",
+                "rand122.html",
+                "rand123.html",
+                "rand124.html",
+                "rand125.html",
+                "rand126.html",
+                "rand127.html",
+            ];
+            const randomIndex = Math.floor(Math.random() * websites.length);
+            window.open(websites[randomIndex], '_blank');
+        }
+    </script>
+</body>
+</html>

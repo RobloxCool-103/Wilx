@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flappy Bird</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background: #70c5ce;
+      overflow: hidden;
+    }
+
+    #gameContainer {
+      position: relative;
+      width: 800px;
+      height: 600px;
+      background: #70c5ce;
+      overflow: hidden;
+      border: 2px solid #000;
+    }
+
+    #bird {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      background: yellow;
+      border-radius: 50%;
+      top: 50%;
+      left: 100px;
+      transform: translateY(-50%);
+    }
+
+    .pipe {
+      position: absolute;
+      width: 60px;
+      background: green;
+      bottom: 0;
+    }
+
+    .pipe.lip {
+      height: 20px;
+      width: 80px;
+      background: green;
+      position: absolute;
+      top: -20px;
+    }
+
+    #pipeTop {
+      height: 200px;
+      bottom: auto;
+      top: 0;
+    }
+
+    #pipeBottom {
+      height: 200px;
+      bottom: 0;
+    }
+
+    #score {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 24px;
+      color: #fff;
+      font-family: Arial, sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <div id="gameContainer">
+    <div id="bird"></div>
+    <div id="pipeTop" class="pipe">
+      <div class="pipe lip"></div>
+    </div>
+    <div id="pipeBottom" class="pipe"></div>
+    <div id="score">0</div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const bird = document.getElementById('bird');
+      const pipeTop = document.getElementById('pipeTop');
+      const pipeBottom = document.getElementById('pipeBottom');
+      const gameContainer = document.getElementById('gameContainer');
+      const scoreDisplay = document.getElementById('score');
+
+      let birdY = 200;
+      let gravity = 0.6;
+      let lift = -10;
+      let velocity = 0;
+      let pipeSpeed = 2;
+      let gap = 200;
+      let score = 0;
+
+      function resetPipes() {
+        const pipeHeight = Math.random() * 200 + 100;
+        pipeTop.style.height = pipeHeight + 'px';
+        pipeBottom.style.height = (gameContainer.clientHeight - pipeHeight - gap) + 'px';
+        pipeTop.style.left = gameContainer.clientWidth + 'px';
+        pipeBottom.style.left = gameContainer.clientWidth + 'px';
+      }
+
+      function moveBird() {
+        velocity += gravity;
+        birdY += velocity;
+        bird.style.top = birdY + 'px';
+
+        if (birdY + bird.clientHeight > gameContainer.clientHeight || birdY < 0) {
+          alert('Game Over');
+          birdY = 200;
+          velocity = 0;
+          score = 0;
+          scoreDisplay.textContent = score;
+          resetPipes();
+        }
+      }
+
+      function movePipes() {
+        let pipeTopLeft = parseInt(pipeTop.style.left);
+        let pipeBottomLeft = parseInt(pipeBottom.style.left);
+
+        pipeTopLeft -= pipeSpeed;
+        pipeBottomLeft -= pipeSpeed;
+
+        if (pipeTopLeft < -pipeTop.clientWidth) {
+          resetPipes();
+          score++;
+          scoreDisplay.textContent = score;
+        } else {
+          pipeTop.style.left = pipeTopLeft + 'px';
+          pipeBottom.style.left = pipeBottomLeft + 'px';
+        }
+      }
+
+      function checkCollision() {
+        const birdRect = bird.getBoundingClientRect();
+        const pipeTopRect = pipeTop.getBoundingClientRect();
+        const pipeBottomRect = pipeBottom.getBoundingClientRect();
+
+        if (
+          birdRect.left < pipeTopRect.right &&
+          birdRect.right > pipeTopRect.left &&
+          (birdRect.top < pipeTopRect.bottom || birdRect.bottom > pipeBottomRect.top)
+        ) {
+          alert('Game Over');
+          birdY = 200;
+          velocity = 0;
+          score = 0;
+          scoreDisplay.textContent = score;
+          resetPipes();
+        }
+      }
+
+      function gameLoop() {
+        moveBird();
+        movePipes();
+        checkCollision();
+        requestAnimationFrame(gameLoop);
+      }
+
+      document.addEventListener('keydown', function (e) {
+        if (e.code === 'Space') {
+          velocity = lift;
+        }
+      });
+
+      resetPipes();
+      gameLoop();
+    });
+  </script>
+</body>
+</html>

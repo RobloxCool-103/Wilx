@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Sequence Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        .sequence, .formula {
+            font-size: 24px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Random Sequence Generator</h1>
+    <div class="formula" id="formula"></div>
+    <div class="sequence" id="sequence"></div>
+
+    <script>
+        function generateSequence() {
+            let terms = parseInt(prompt("Enter the number of terms in the sequence:", "10"));
+            if (isNaN(terms) || terms <= 0) {
+                alert("Please enter a valid positive number.");
+                return;
+            }
+
+            let currentValue = Math.random() * 200 - 100;
+            const sequenceDiv = document.getElementById('sequence');
+            const formulaDiv = document.getElementById('formula');
+
+            let formula = `(${currentValue.toFixed(2)})`;
+            let sequence = `${currentValue.toFixed(2)}`;
+
+            for (let i = 1; i < terms; i++) {
+                const operation = ['+', '-', '*', '/'][Math.floor(Math.random() * 4)];
+                let number = Math.random() * 10;
+
+                if (operation === '/') {
+                    number = number !== 0 ? number : 1; // Avoid division by zero
+                }
+
+                switch (operation) {
+                    case '+':
+                        currentValue += number;
+                        break;
+                    case '-':
+                        currentValue -= number;
+                        break;
+                    case '*':
+                        currentValue *= number;
+                        break;
+                    case '/':
+                        currentValue /= number;
+                        break;
+                }
+
+                formula += ` ${operation} ${number.toFixed(2)}`;
+                sequence += `, ${currentValue.toFixed(2)}`;
+            }
+
+            formulaDiv.innerText = `Formula: ${formula}`;
+            sequenceDiv.innerText = `Sequence: ${sequence}`;
+        }
+
+        window.onload = generateSequence;
+    </script>
+</body>
+</html>

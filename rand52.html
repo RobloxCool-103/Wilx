@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Elephant Drawing</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f0f0f0;
+      margin: 0;
+    }
+    .elephant {
+      position: relative;
+      width: 300px;
+      height: 200px;
+      background-color: gray;
+      border-radius: 50% 50% 0 0;
+    }
+    .ear {
+      width: 100px;
+      height: 150px;
+      background-color: gray;
+      position: absolute;
+      top: -50px;
+      border-radius: 50%;
+    }
+    .ear.left {
+      left: -50px;
+    }
+    .ear.right {
+      right: -50px;
+    }
+    .eye {
+      width: 30px;
+      height: 30px;
+      background-color: white;
+      border-radius: 50%;
+      position: absolute;
+      top: 70px;
+    }
+    .eye.left {
+      left: 70px;
+    }
+    .eye.right {
+      right: 70px;
+    }
+    .trunk {
+      width: 40px;
+      height: 100px;
+      background-color: gray;
+      position: absolute;
+      top: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 20px 20px 0 0;
+    }
+    .trunk-end {
+      width: 60px;
+      height: 20px;
+      background-color: gray;
+      position: absolute;
+      top: 90px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 0 0 30px 30px;
+    }
+  </style>
+</head>
+<body>
+  <div class="elephant">
+    <div class="ear left"></div>
+    <div class="ear right"></div>
+    <div class="eye left"></div>
+    <div class="eye right"></div>
+    <div class="trunk"></div>
+    <div class="trunk-end"></div>
+  </div>
+</body>
+</html>
