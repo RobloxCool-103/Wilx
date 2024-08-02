@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tic Tac Toe with AI</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+  }
+  
+  .board {
+    display: inline-block;
+    margin-top: 50px;
+  }
+  
+  .cell {
+    width: 50px;
+    height: 50px;
+    border: 1px solid #000;
+    display: inline-block;
+    background-color: #fff;
+    font-size: 24px;
+    line-height: 50px;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+<div class="board" id="board"></div>
+
+<script>
+  const boardSize = 3;
+  let board = Array.from({ length: boardSize }, () => Array(boardSize).fill(''));
+  let currentPlayer = 'X';
+  let gameOver = false;
+
+  const boardElement = document.getElementById('board');
+
+  function renderBoard() {
+    boardElement.innerHTML = '';
+    for (let row = 0; row < boardSize; row++) {
+      for (let col = 0; col < boardSize; col++) {
+        const cell = document.createElement('div');
+        cell.classList.add('cell');
+        cell.dataset.row = row;
+        cell.dataset.col = col;
+        cell.textContent = board[row][col];
+        cell.addEventListener('click', () => makeMove(row, col));
+        boardElement.appendChild(cell);
+      }
+      boardElement.appendChild(document.createElement('br'));
+    }
+  }
+
+  function makeMove(row, col) {
+    if (board[row][col] === '' && !gameOver) {
+      board[row][col] = currentPlayer;
+      renderBoard();
+      if (checkWin(row, col)) {
+        gameOver = true;
+        alert(`${currentPlayer} wins!`);
+        return;
+      } else if (checkDraw()) {
+        gameOver = true;
+        alert('It\'s a draw!');
+        return;
+      }
+      switchPlayer();
+      if (currentPlayer === 'O') {
+        makeAIMove();
+      }
+    }
+  }
+
+  function switchPlayer() {
+    currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+  }
+
+  function makeAIMove() {
+    const availableMoves = [];
+    for (let row = 0; row < boardSize; row++) {
+      for (let col = 0; col < boardSize; col++) {
+        if (board[row][col] === '') {
+          availableMoves.push({ row, col });
+        }
+      }
+    }
+    const randomMove = availableMoves[Math.floor(Math.random() * availableMoves.length)];
+    makeMove(randomMove.row, randomMove.col);
+  }
+
+  function checkWin(row, col) {
+    const symbol = board[row][col];
+
+    // Check row
+    let rowCount = 0;
+    for (let c = 0; c < boardSize; c++) {
+      if (board[row][c] === symbol) {
+        rowCount++;
+      }
+    }
+    if (rowCount === boardSize) return true;
+
+    // Check column
+    let colCount = 0;
+    for (let r = 0; r < boardSize; r++) {
+      if (board[r][col] === symbol) {
+        colCount++;
+      }
+    }
+    if (colCount === boardSize) return true;
+
+    // Check diagonal (top-left to bottom-right)
+    if (row === col) {
+      let diagCount = 0;
+      for (let i = 0; i < boardSize; i++) {
+        if (board[i][i] === symbol) {
+          diagCount++;
+        }
+      }
+      if (diagCount === boardSize) return true;
+    }
+
+    // Check diagonal (top-right to bottom-left)
+    if (row + col === boardSize - 1) {
+      let antiDiagCount = 0;
+      for (let i = 0; i < boardSize; i++) {
+        if (board[i][boardSize - 1 - i] === symbol) {
+          antiDiagCount++;
+        }
+      }
+      if (antiDiagCount === boardSize) return true;
+    }
+
+    return false;
+  }
+
+  function checkDraw() {
+    for (let row = 0; row < boardSize; row++) {
+      for (let col = 0; col < boardSize; col++) {
+        if (board[row][col] === '') {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  renderBoard();
+</script>
+</body>
+</html>

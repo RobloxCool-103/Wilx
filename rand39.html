@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic 3D Game</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Initialize Three.js scene
+        let scene = new THREE.Scene();
+        let camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        let renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Create a cube
+        let geometry = new THREE.BoxGeometry();
+        let material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+        let cube = new THREE.Mesh(geometry, material);
+        scene.add(cube);
+
+        // Create wireframe edges for the cube
+        let edges = new THREE.EdgesGeometry(geometry);
+        let lineMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
+        let wireframe = new THREE.LineSegments(edges, lineMaterial);
+        cube.add(wireframe);
+
+        // Initial cube rotation
+        let cubeRotation = new THREE.Euler();
+
+        // Position the camera
+        camera.position.z = 5;
+
+        // Handle mouse move event
+        document.addEventListener('mousemove', handleMouseMove);
+
+        // Render loop
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Update cube rotation
+            cube.rotation.setFromVector3(cubeRotation);
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        // Handle mouse move event
+        function handleMouseMove(event) {
+            // Map mouse coordinates to rotation angles
+            let mouseX = event.clientX / window.innerWidth * 2 - 1; // Normalize mouse x position to range [-1, 1]
+            let mouseY = event.clientY / window.innerHeight * 2 - 1; // Normalize mouse y position to range [-1, 1]
+
+            // Update cube rotation based on mouse movement
+            cubeRotation.y = mouseX * Math.PI; // Rotate around y-axis (left-right movement)
+            cubeRotation.x = mouseY * Math.PI; // Rotate around x-axis (up-down movement)
+        }
+    </script>
+</body>
+</html>

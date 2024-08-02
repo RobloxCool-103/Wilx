@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Minesweeper</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+  }
+  .grid {
+    display: inline-grid;
+    grid-template-columns: repeat(10, 30px);
+    gap: 1px;
+    margin-bottom: 20px;
+  }
+  .cell {
+    width: 30px;
+    height: 30px;
+    background-color: #ccc;
+    border: 1px solid #999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  .cell.clicked {
+    background-color: #eee;
+  }
+  .cell.flagged {
+    background-color: #ccc;
+  }
+  #info {
+    margin-bottom: 10px;
+  }
+</style>
+</head>
+<body>
+<h1>Minesweeper</h1>
+<div id="info">
+  <p>Remaining Mines: <span id="minesLeft"></span></p>
+</div>
+<div id="grid" class="grid"></div>
+<button onclick="restartGame()">Restart</button>
+<script>
+  const rows = 10;
+  const cols = 10;
+  const totalMines = 20;
+
+  let grid = [];
+  let mines = [];
+  let uncoveredCount = 0;
+  let flaggedCount = 0;
+
+  function generateGrid() {
+    const container = document.getElementById('grid');
+    for (let i = 0; i < rows; i++) {
+      grid.push([]);
+      for (let j = 0; j < cols; j++) {
+        const cell = document.createElement('div');
+        cell.classList.add('cell');
+        cell.dataset.row = i;
+        cell.dataset.col = j;
+        cell.dataset.mine = 'false';
+        cell.dataset.adjacentMines = 0;
+        cell.addEventListener('click', handleClick);
+        cell.addEventListener('contextmenu', handleRightClick);
+        grid[i][j] = cell;
+        container.appendChild(cell);
+      }
+    }
+  }
+
+  function placeMines() {
+    let minesPlaced = 0;
+    while (minesPlaced < totalMines) {
+      const row = Math.floor(Math.random() * rows);
+      const col = Math.floor(Math.random() * cols);
+      if (grid[row][col].dataset.mine === 'false') {
+        grid[row][col].dataset.mine = 'true';
+        mines.push(grid[row][col]);
+        minesPlaced++;
+      }
+    }
+  }
+
+  function updateAdjacentMines() {
+    for (let mine of mines) {
+      const row = parseInt(mine.dataset.row);
+      const col = parseInt(mine.dataset.col);
+      for (let i = Math.max(0, row - 1); i <= Math.min(row + 1, rows - 1); i++) {
+        for (let j = Math.max(0, col - 1); j <= Math.min(col + 1, cols - 1); j++) {
+          if (!(i === row && j === col) && grid[i][j].dataset.mine === 'false') {
+            grid[i][j].dataset.adjacentMines++;
+          }
+        }
+      }
+    }
+  }
+
+  function handleClick(event) {
+    const cell = event.target;
+    const row = parseInt(cell.dataset.row);
+    const col = parseInt(cell.dataset.col);
+    if (cell.classList.contains('clicked') || cell.classList.contains('flagged')) return;
+    cell.classList.add('clicked');
+    if (cell.dataset.mine === 'true') {
+      cell.textContent = '💣';
+      revealMines();
+      gameOver(false);
+    } else {
+      const adjacentMines = parseInt(cell.dataset.adjacentMines);
+      if (adjacentMines > 0) {
+        cell.textContent = adjacentMines;
+      } else {
+        revealEmptyCells(row, col);
+      }
+      uncoveredCount++;
+      if (uncoveredCount === rows * cols - totalMines) {
+        gameOver(true);
+      }
+    }
+  }
+
+  function handleRightClick(event) {
+    event.preventDefault();
+    const cell = event.target;
+    if (cell.classList.contains('clicked')) return;
+    if (cell.classList.contains('flagged')) {
+      cell.classList.remove('flagged');
+      cell.textContent = '';
+      flaggedCount--;
+    } else {
+      cell.classList.add('flagged');
+      cell.textContent = '🚩';
+      flaggedCount++;
+    }
+    updateMinesLeft();
+  }
+
+  function revealMines() {
+    for (let mine of mines) {
+      mine.textContent = '💣';
+    }
+  }
+
+  function revealEmptyCells(row, col) {
+    const queue = [];
+    queue.push({ row: row, col: col });
+    while (queue.length > 0) {
+      const { row, col } = queue.shift();
+      for (let i = Math.max(0, row - 1); i <= Math.min(row + 1, rows - 1); i++) {
+        for (let j = Math.max(0, col - 1); j <= Math.min(col + 1, cols - 1); j++) {
+          const cell = grid[i][j];
+          if (!cell.classList.contains('clicked')) {
+            cell.classList.add('clicked');
+            uncoveredCount++;
+            const adjacentMines = parseInt(cell.dataset.adjacentMines);
+            if (adjacentMines > 0) {
+              cell.textContent = adjacentMines;
+            } else {
+              queue.push({ row: i, col: j });
+            }
+          }
+        }
+      }
+    }
+  }
+
+  function gameOver(win) {
+    const message = document.createElement('p');
+    message.textContent = win ? 'You win!' : 'Game over!';
+    document.body.appendChild(message);
+    for (let row of grid) {
+      for (let cell of row) {
+        cell.removeEventListener('click', handleClick);
+        cell.removeEventListener('contextmenu', handleRightClick);
+        if (cell.dataset.mine === 'true') {
+          cell.textContent = '💣';
+        }
+      }
+    }
+  }
+
+  function updateMinesLeft() {
+    document.getElementById('minesLeft').textContent = totalMines - flaggedCount;
+  }
+
+  function restartGame() {
+    const info = document.getElementById('info');
+    info.parentNode.removeChild(info);
+    const gridContainer = document.getElementById('grid');
+    gridContainer.parentNode.removeChild(gridContainer);
+    grid = [];
+    mines = [];
+    uncoveredCount = 0;
+    flaggedCount = 0;
+    generateGrid();
+    placeMines();
+    updateAdjacentMines();
+    updateMinesLeft();
+  }
+
+  generateGrid();
+  placeMines();
+  updateAdjacentMines();
+  updateMinesLeft();
+</script>
+</body>
+</html>

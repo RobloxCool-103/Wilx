@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chase Game</title>
+    <style>
+        canvas {
+            border: 1px solid black;
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="600" height="400"></canvas>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        const playerSize = 20;
+        const enemySize = 20;
+        const coinSize = 10;
+        let playerX = canvas.width / 2;
+        let playerY = canvas.height / 2;
+        let coinX = Math.random() * (canvas.width - coinSize);
+        let coinY = Math.random() * (canvas.height - coinSize);
+        let enemyX = canvas.width / 4;
+        let enemyY = canvas.height / 4;
+        let score = 0;
+        let gameOver = false;
+        let playerColor = "#0000ff"; // Initial player color
+
+        function draw() {
+            if (!gameOver) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                drawPlayer();
+                drawEnemy();
+                drawCoin();
+                drawScore();
+                moveCoin();
+                moveEnemy();
+                checkCollision();
+                requestAnimationFrame(draw);
+            } else {
+                drawGameOver();
+            }
+        }
+
+        function checkCollision() {
+            // Check collision between player and coin
+            if (
+                playerX < coinX + coinSize &&
+                playerX + playerSize > coinX &&
+                playerY < coinY + coinSize &&
+                playerY + playerSize > coinY
+            ) {
+                score++;
+                coinX = Math.random() * (canvas.width - coinSize);
+                coinY = Math.random() * (canvas.height - coinSize);
+            }
+            
+            // Check collision between player and enemy
+            if (
+                playerX < enemyX + enemySize &&
+                playerX + playerSize > enemyX &&
+                playerY < enemyY + enemySize &&
+                playerY + playerSize > enemyY
+            ) {
+                gameOver = true;
+            }
+        }
+
+        function drawPlayer() {
+            ctx.fillStyle = playerColor;
+            ctx.fillRect(playerX, playerY, playerSize, playerSize);
+        }
+
+        function drawEnemy() {
+            ctx.fillStyle = "#ff0000";
+            ctx.fillRect(enemyX, enemyY, enemySize, enemySize);
+        }
+
+        function drawCoin() {
+            ctx.fillStyle = "#ffff00";
+            ctx.fillRect(coinX, coinY, coinSize, coinSize);
+        }
+
+        function moveCoin() {
+            // Move coin randomly
+            if (Math.random() < 0.01) {
+                coinX += Math.random() * 4 - 2;
+                coinY += Math.random() * 4 - 2;
+                coinX = Math.max(0, Math.min(coinX, canvas.width - coinSize));
+                coinY = Math.max(0, Math.min(coinY, canvas.height - coinSize));
+            }
+        }
+
+        function moveEnemy() {
+            // Move enemy towards the player
+            if (playerX < enemyX) enemyX--;
+            if (playerX > enemyX) enemyX++;
+            if (playerY < enemyY) enemyY--;
+            if (playerY > enemyY) enemyY++;
+        }
+
+        function drawScore() {
+            ctx.fillStyle = "#000";
+            ctx.font = "20px Arial";
+            ctx.fillText("Score: " + score, 10, 20);
+        }
+
+        function drawGameOver() {
+            ctx.fillStyle = "#000";
+            ctx.font = "30px Arial";
+            ctx.fillText("Game Over", canvas.width / 2 - 100, canvas.height / 2 - 15);
+        }
+
+        document.addEventListener("keydown", function(event) {
+            switch (event.keyCode) {
+                case 37: // Left arrow
+                    playerX -= 5;
+                    break;
+                case 38: // Up arrow
+                    playerY -= 5;
+                    break;
+                case 39: // Right arrow
+                    playerX += 5;
+                    break;
+                case 40: // Down arrow
+                    playerY += 5;
+                    break;
+            }
+        });
+
+        draw(); // Start the game loop
+    </script>
+</body>
+</html>

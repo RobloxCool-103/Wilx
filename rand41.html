@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tap Rhythm Game</title>
+    <style>
+        /* Your existing CSS */
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <button class="tap-button" id="tapButton">Tap Me</button>
+        <p id="score">Score: 0</p>
+        <div class="countdown" id="countdown"></div>
+    </div>
+
+    <script>
+        const tapButton = document.getElementById('tapButton');
+        const scoreDisplay = document.getElementById('score');
+        const countdownDisplay = document.getElementById('countdown');
+        let score = 0;
+        let countdownValue = 3;
+        let countdownTimer;
+        let gameIsActive = true;
+
+        function randomDelay(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function startCountdown() {
+            countdownValue = 3;
+            countdownDisplay.textContent = `Get ready! Click in ${countdownValue} seconds`;
+            tapButton.disabled = true;
+            countdownTimer = setInterval(() => {
+                countdownValue--;
+                if (countdownValue === 0) {
+                    clearInterval(countdownTimer);
+                    countdownDisplay.textContent = '';
+                    tapButton.disabled = false;
+                    gameIsActive = true;
+                } else {
+                    countdownDisplay.textContent = `Get ready! Click in ${countdownValue} seconds`;
+                }
+            }, 1000);
+        }
+
+        function handleTap() {
+            if (!gameIsActive) {
+                countdownDisplay.textContent = 'Game Over!';
+                tapButton.disabled = true;
+                return;
+            }
+
+            if (countdownValue > 1) {
+                // Restart the game
+                clearInterval(countdownTimer);
+                startCountdown();
+            } else if (randomDelay(1, 100) === 1) {
+                gameIsActive = false;
+                startCountdown();
+            } else {
+                score++;
+                scoreDisplay.textContent = `Score: ${score}`;
+            }
+        }
+
+        tapButton.addEventListener('click', handleTap);
+    </script>
+</body>
+</html>
